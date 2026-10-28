@@ -30,7 +30,11 @@
         method="POST"
         action="{{ route('properties.store') }}"
         enctype="multipart/form-data"
+        data-loading-overlay="true"
+        data-loading-title="Publishing Property Listing..."
+        data-loading-subtitle="Uploading property photos and indexing your listing on NaijaProps..."
         x-data="{
+            submitting: false,
             propertyType: '{{ old('property_type', 'duplex') }}',
             transactionType: '{{ old('transactionType', old('transaction_type', 'sale')) }}',
             price: '{{ old('price', '') }}',
@@ -338,8 +342,18 @@
             <a href="{{ route('properties.my') }}" class="text-sm font-semibold text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-xl">
                 Cancel
             </a>
-            <button type="submit" class="bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition">
-                Publish Property Listing
+            <button
+                type="submit"
+                @click="if ($el.form.checkValidity()) submitting = true"
+                :disabled="submitting"
+                data-loading-text="Publishing listing..."
+                class="bg-blue-800 hover:bg-blue-700 disabled:opacity-80 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2"
+            >
+                <svg x-show="submitting" x-cloak class="animate-spin h-4 w-4 text-white shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span x-text="submitting ? 'Publishing listing...' : 'Publish Property Listing'">Publish Property Listing</span>
             </button>
         </div>
     </form>

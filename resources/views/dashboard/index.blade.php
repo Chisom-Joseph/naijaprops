@@ -67,7 +67,12 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Skeleton Loader for Owner/Agent Dashboard Lists -->
+        <div data-np-skeleton class="hidden mb-6">
+            <x-skeletons.list-items :items="3" variant="listing" />
+        </div>
+
+        <div data-np-content class="grid grid-cols-1 lg:grid-cols-3 gap-8 transition-opacity duration-200">
             <!-- My Properties List -->
             <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -205,7 +210,12 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Skeleton Loader for Buyer/Tenant Dashboard Lists -->
+        <div data-np-skeleton class="hidden mb-6">
+            <x-skeletons.list-items :items="3" variant="listing" />
+        </div>
+
+        <div data-np-content class="grid grid-cols-1 lg:grid-cols-3 gap-8 transition-opacity duration-200">
             <!-- Saved Properties -->
             <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -326,7 +336,12 @@
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Skeleton Loader for Tailored Recommendations -->
+                <div data-np-skeleton class="hidden mb-6">
+                    <x-skeletons.property-card :count="3" />
+                </div>
+
+                <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
                     @foreach($recommendedProperties as $recItem)
                         <x-recommended-property-card
                             :item="$recItem"

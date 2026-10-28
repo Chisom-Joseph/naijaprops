@@ -137,7 +137,11 @@
 
                     <!-- Search Button -->
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2">
+                        <button
+                            type="submit"
+                            data-loading-text="Searching..."
+                            class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2"
+                        >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
@@ -174,7 +178,12 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Skeleton Loader for AI Recommendations Grid -->
+        <div data-np-skeleton class="hidden mb-6">
+            <x-skeletons.property-card :count="3" />
+        </div>
+
+        <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
             @foreach($recommendedProperties as $recItem)
                 <x-recommended-property-card
                     :item="$recItem"
@@ -198,7 +207,12 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Skeleton Loader for Featured Properties Grid -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.property-card :count="6" />
+    </div>
+
+    <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($featuredProperties ?? [] as $property)
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
                 <a href="{{ route('properties.show', $property) }}" class="relative h-52 bg-slate-200 block overflow-hidden">

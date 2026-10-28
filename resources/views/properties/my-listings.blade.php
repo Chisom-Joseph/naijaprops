@@ -71,11 +71,11 @@
                 </select>
             </div>
             <div class="flex items-center gap-2">
-                <button type="submit" class="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-4 rounded-xl transition">
+                <button type="submit" data-loading-text="Filtering..." class="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-4 rounded-xl transition">
                     Filter
                 </button>
                 @if(request()->anyFilled(['search', 'status', 'transaction_type']))
-                    <a href="{{ route('properties.my') }}" class="text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl">
+                    <a href="{{ route('properties.my') }}" data-skeleton-trigger class="text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl">
                         Reset
                     </a>
                 @endif
@@ -83,8 +83,13 @@
         </div>
     </form>
 
+    <!-- Skeleton Loader for My Listings -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.list-items :items="4" variant="listing" />
+    </div>
+
     <!-- Listings Table / Cards -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div data-np-content class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-opacity duration-200">
         <div class="divide-y divide-slate-100">
             @forelse($properties as $property)
                 <div class="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-slate-50/70 transition">

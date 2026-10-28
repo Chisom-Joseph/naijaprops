@@ -66,11 +66,11 @@
                 </select>
             </div>
             <div class="flex items-center gap-2">
-                <button type="submit" class="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-4 rounded-xl transition">
+                <button type="submit" data-loading-text="Filtering..." class="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold text-sm py-2 px-4 rounded-xl transition">
                     Filter Saved
                 </button>
                 @if(request()->anyFilled(['search', 'transaction_type']))
-                    <a href="{{ route('saved-properties.index') }}" class="text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl">
+                    <a href="{{ route('saved-properties.index') }}" data-skeleton-trigger class="text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl">
                         Reset
                     </a>
                 @endif
@@ -78,8 +78,13 @@
         </div>
     </form>
 
+    <!-- Skeleton Loader for Saved Properties Grid -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.property-card :count="3" />
+    </div>
+
     <!-- Saved Properties Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($savedProperties as $saved)
             @php($property = $saved->property)
             @if($property)

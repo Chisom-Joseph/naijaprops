@@ -245,14 +245,18 @@
 
                 <!-- Action Buttons -->
                 <div class="lg:col-span-2 flex items-center gap-2">
-                    <button type="submit" class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-1.5">
+                    <button
+                        type="submit"
+                        data-loading-text="Filtering..."
+                        class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-1.5"
+                    >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         Apply Filters
                     </button>
                     @if(!empty($activeFilters) || request('sort', 'latest') !== 'latest')
-                        <a href="{{ route('properties.index') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl transition shrink-0">
+                        <a href="{{ route('properties.index') }}" data-skeleton-trigger class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-2.5 rounded-xl transition shrink-0">
                             Reset
                         </a>
                     @endif
@@ -347,8 +351,13 @@
         @endif
     </div>
 
+    <!-- Skeleton Loader for Property Cards Grid -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.property-card :count="6" />
+    </div>
+
     <!-- Property Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($properties as $property)
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
                 <a href="{{ route('properties.show', $property) }}" class="relative h-56 bg-slate-200 block overflow-hidden">

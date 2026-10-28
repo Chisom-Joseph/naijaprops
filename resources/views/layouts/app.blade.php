@@ -176,6 +176,28 @@
         html.dark textarea::placeholder {
             color: #64748b !important;
         }
+
+        /* Skeleton Shimmer Animation (Light & Dark Mode) */
+        @keyframes npShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .np-skeleton-shimmer {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: npShimmer 1.4s ease-in-out infinite;
+        }
+        html.dark .np-skeleton-shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+        }
+
+        /* Button Loading State */
+        .np-btn-loading {
+            pointer-events: none;
+            opacity: 0.88;
+            cursor: wait;
+        }
     </style>
 </head>
 @php
@@ -231,6 +253,53 @@
     @keydown.escape.window="mobileSidebarOpen = false; mobileOpen = false"
     class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200"
 >
+    <!-- Top Loading Progress Bar -->
+    <div id="np-top-progress-container" class="fixed top-0 left-0 right-0 z-50 h-1 pointer-events-none opacity-0 transition-opacity duration-200" aria-hidden="true">
+        <div id="np-top-progress-bar" class="h-full w-0 bg-gradient-to-r from-blue-600 via-sky-400 to-emerald-400 shadow-[0_0_10px_rgba(59,130,246,0.75)] transition-all duration-200 ease-out"></div>
+    </div>
+
+    <!-- Full-Page / Overlay Loading Progress Modal for Important Actions -->
+    <div
+        id="np-loading-overlay"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 transition-opacity duration-200"
+    >
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+            <!-- Dual Ring Branded Spinner -->
+            <div class="relative w-14 h-14 mx-auto flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full border-4 border-blue-100 dark:border-slate-800"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-800 dark:border-t-blue-400 border-r-blue-600 dark:border-r-blue-500 animate-spin"></div>
+                <span class="text-xs font-extrabold text-blue-900 dark:text-blue-300 tracking-tight">NP</span>
+            </div>
+
+            <div class="space-y-1">
+                <h3 id="np-overlay-title" class="text-base font-extrabold text-slate-900 dark:text-white">
+                    Processing your request...
+                </h3>
+                <p id="np-overlay-subtitle" class="text-xs text-slate-500 dark:text-slate-400">
+                    Please wait a moment while NaijaProps completes this action.
+                </p>
+            </div>
+
+            <!-- Animated Determinate/Indeterminate Progress Track -->
+            <div class="space-y-1.5 pt-1">
+                <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                        id="np-overlay-progress-bar"
+                        class="h-full bg-gradient-to-r from-blue-800 via-blue-600 to-emerald-500 rounded-full transition-all duration-300 ease-out"
+                        style="width: 15%"
+                    ></div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                    <span>Secure connection</span>
+                    <span id="np-overlay-percent">15%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Top Navigation Bar -->
     <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-xs transition-colors duration-200">
         <div class="{{ $showDashboardSidebar ? 'max-w-full px-4 sm:px-6 lg:px-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' }}">
@@ -363,10 +432,10 @@
                                 </span>
                             </div>
 
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
                                 @csrf
-                                <button type="submit" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-200 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 px-3 py-2 rounded-lg transition">
-                                    Logout
+                                <button type="submit" data-loading-text="Signing out..." class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-200 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+                                    <span>Logout</span>
                                 </button>
                             </form>
                         </div>
@@ -426,9 +495,9 @@
                         <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ auth()->user()->full_name }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role_label }}</p>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
                         @csrf
-                        <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/40 dark:text-red-300 px-3 py-1.5 rounded-lg">Logout</button>
+                        <button type="submit" data-loading-text="Signing out..." class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/40 dark:text-red-300 px-3 py-1.5 rounded-lg">Logout</button>
                     </form>
                 </div>
             @else
@@ -553,5 +622,315 @@
             </div>
         </div>
     </footer>
+
+    <!-- Global Loading Experience Controller: Button Spinners, Skeleton Loaders & Progress Overlay -->
+    <script>
+        (function () {
+            const topProgressContainer = document.getElementById('np-top-progress-container');
+            const topProgressBar = document.getElementById('np-top-progress-bar');
+            const overlay = document.getElementById('np-loading-overlay');
+            const overlayTitle = document.getElementById('np-overlay-title');
+            const overlaySubtitle = document.getElementById('np-overlay-subtitle');
+            const overlayProgressBar = document.getElementById('np-overlay-progress-bar');
+            const overlayPercent = document.getElementById('np-overlay-percent');
+
+            let topTimer = null;
+            let overlayTimer = null;
+
+            const SPINNER_SVG = '<svg class="animate-spin h-4 w-4 shrink-0 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+            function startTopProgress() {
+                if (!topProgressContainer || !topProgressBar) return;
+                clearInterval(topTimer);
+                topProgressContainer.classList.remove('opacity-0');
+                let pct = 18;
+                topProgressBar.style.width = pct + '%';
+                topTimer = setInterval(function () {
+                    if (pct < 90) {
+                        pct += Math.max(2, Math.round((90 - pct) * 0.18));
+                        topProgressBar.style.width = pct + '%';
+                    }
+                }, 140);
+            }
+
+            function finishTopProgress() {
+                if (!topProgressContainer || !topProgressBar) return;
+                clearInterval(topTimer);
+                topProgressBar.style.width = '100%';
+                setTimeout(function () {
+                    topProgressContainer.classList.add('opacity-0');
+                    setTimeout(function () {
+                        topProgressBar.style.width = '0%';
+                    }, 200);
+                }, 180);
+            }
+
+            function showOverlay(title, subtitle) {
+                if (!overlay) return;
+                if (overlayTitle && title) overlayTitle.textContent = title;
+                if (overlaySubtitle && subtitle) overlaySubtitle.textContent = subtitle;
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+
+                clearInterval(overlayTimer);
+                let pct = 18;
+                if (overlayProgressBar) overlayProgressBar.style.width = pct + '%';
+                if (overlayPercent) overlayPercent.textContent = pct + '%';
+
+                overlayTimer = setInterval(function () {
+                    if (pct < 92) {
+                        pct += Math.max(3, Math.round((92 - pct) * 0.2));
+                        if (overlayProgressBar) overlayProgressBar.style.width = pct + '%';
+                        if (overlayPercent) overlayPercent.textContent = pct + '%';
+                    }
+                }, 160);
+            }
+
+            function hideOverlay() {
+                if (!overlay) return;
+                clearInterval(overlayTimer);
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
+
+            function showSkeletons() {
+                document.querySelectorAll('[data-np-skeleton]').forEach(function (skeletonEl) {
+                    skeletonEl.classList.remove('hidden');
+                });
+                document.querySelectorAll('[data-np-content]').forEach(function (contentEl) {
+                    contentEl.classList.add('opacity-40', 'pointer-events-none');
+                });
+            }
+
+            function hideSkeletons() {
+                document.querySelectorAll('[data-np-skeleton]').forEach(function (skeletonEl) {
+                    skeletonEl.classList.add('hidden');
+                });
+                document.querySelectorAll('[data-np-content]').forEach(function (contentEl) {
+                    contentEl.classList.remove('opacity-40', 'pointer-events-none');
+                });
+            }
+
+            function inferOverlayMessaging(form, submitter) {
+                const explicitTitle = (submitter && submitter.getAttribute('data-loading-title')) || form.getAttribute('data-loading-title');
+                const explicitSubtitle = (submitter && submitter.getAttribute('data-loading-subtitle')) || form.getAttribute('data-loading-subtitle');
+                if (explicitTitle) {
+                    return {
+                        title: explicitTitle,
+                        subtitle: explicitSubtitle || 'Please wait while NaijaProps processes your request...'
+                    };
+                }
+
+                const action = (form.getAttribute('action') || '').toLowerCase();
+                const methodInput = form.querySelector('input[name="_method"]');
+                const method = (methodInput ? methodInput.value : (form.getAttribute('method') || 'GET')).toUpperCase();
+
+                if (action.includes('/login')) {
+                    return { title: 'Signing in to NaijaProps...', subtitle: 'Verifying your credentials and loading your dashboard...' };
+                }
+                if (action.includes('/register')) {
+                    return { title: 'Creating your NaijaProps Account...', subtitle: 'Setting up your profile and personalised preferences...' };
+                }
+                if (action.includes('/logout')) {
+                    return { title: 'Signing Out...', subtitle: 'Closing your NaijaProps session securely...' };
+                }
+                if (action.includes('/enquiries')) {
+                    return { title: method === 'POST' ? 'Sending Property Enquiry...' : 'Updating Enquiry...', subtitle: 'Delivering your message to the property provider...' };
+                }
+                if (action.includes('/reports')) {
+                    return { title: 'Processing Listing Report...', subtitle: 'Updating NaijaProps Trust & Safety moderation queue...' };
+                }
+                if (action.includes('/saved-properties') || action.includes('/save')) {
+                    return { title: 'Updating Saved Properties...', subtitle: 'Syncing your property watchlist...' };
+                }
+                if (action.includes('/admin/')) {
+                    return { title: 'Applying Administrator Action...', subtitle: 'Updating platform records and permissions...' };
+                }
+                if (action.includes('/properties')) {
+                    if (method === 'DELETE') {
+                        return { title: 'Deleting Property Listing...', subtitle: 'Removing listing and associated gallery images...' };
+                    }
+                    if (method === 'PUT' || method === 'PATCH') {
+                        return { title: 'Saving Property Updates...', subtitle: 'Updating listing details and media gallery...' };
+                    }
+                    if (method === 'POST') {
+                        return { title: 'Publishing Property Listing...', subtitle: 'Uploading photos and indexing your listing on NaijaProps...' };
+                    }
+                }
+                if (action.includes('/recommendations')) {
+                    return { title: 'Ranking Properties with AI Engine...', subtitle: 'Scoring location, property type, Naira price range, and bedrooms...' };
+                }
+
+                return {
+                    title: 'Loading Results...',
+                    subtitle: 'Fetching verified Nigerian property data...'
+                };
+            }
+
+            function inferButtonLoadingText(btn, form) {
+                const explicit = btn.getAttribute('data-loading-text');
+                if (explicit) return explicit;
+
+                const rawText = (btn.textContent || btn.value || '').trim();
+                if (!rawText) return '';
+
+                const lower = rawText.toLowerCase();
+                if (lower.includes('sign in') || lower.includes('login')) return 'Signing in...';
+                if (lower.includes('create') && lower.includes('account')) return 'Creating account...';
+                if (lower.includes('register')) return 'Registering...';
+                if (lower.includes('publish')) return 'Publishing listing...';
+                if (lower.includes('save')) return 'Saving...';
+                if (lower.includes('send')) return 'Sending...';
+                if (lower.includes('submit')) return 'Submitting...';
+                if (lower.includes('apply') && lower.includes('filter')) return 'Filtering...';
+                if (lower.includes('search')) return 'Searching...';
+                if (lower.includes('filter')) return 'Filtering...';
+                if (lower.includes('rank')) return 'Ranking...';
+                if (lower.includes('approve')) return 'Approving...';
+                if (lower.includes('reject') || lower.includes('hold')) return 'Updating...';
+                if (lower.includes('delete') || lower.includes('remove')) return 'Removing...';
+                if (lower.includes('unsave')) return 'Removing...';
+                if (lower.includes('deactivate')) return 'Deactivating...';
+                if (lower.includes('activate')) return 'Activating...';
+                if (lower.includes('resolve')) return 'Resolving...';
+                if (lower.includes('mark')) return 'Updating...';
+                if (lower.includes('logout')) return 'Signing out...';
+                return 'Processing...';
+            }
+
+            function activateButtonSpinner(btn, form) {
+                if (!btn || btn.dataset.npSpinning === 'true') return;
+                btn.dataset.npSpinning = 'true';
+                btn.classList.add('np-btn-loading');
+
+                if (btn.tagName === 'BUTTON') {
+                    const isIconOnly = btn.textContent.trim() === '' || btn.hasAttribute('data-icon-only');
+                    if (isIconOnly) {
+                        btn.innerHTML = SPINNER_SVG;
+                    } else {
+                        const loadingText = inferButtonLoadingText(btn, form);
+                        btn.innerHTML = '<span class="inline-flex items-center justify-center gap-2">' + SPINNER_SVG + '<span>' + loadingText + '</span></span>';
+                    }
+                } else if (btn.tagName === 'INPUT') {
+                    btn.value = inferButtonLoadingText(btn, form);
+                }
+
+                // Disable after current event tick so native form submission includes button value if any
+                setTimeout(function () {
+                    btn.disabled = true;
+                }, 10);
+            }
+
+            // Global Form Submit Handler
+            document.addEventListener('submit', function (event) {
+                if (event.defaultPrevented) return;
+                const form = event.target;
+                if (!(form instanceof HTMLFormElement)) return;
+
+                const submitter = event.submitter || form.querySelector('button[type="submit"], input[type="submit"]');
+                if (submitter) {
+                    activateButtonSpinner(submitter, form);
+                }
+
+                startTopProgress();
+
+                const method = (form.getAttribute('method') || 'GET').toUpperCase();
+                const isGetFilter = method === 'GET' && form.getAttribute('data-loading-overlay') !== 'true';
+
+                if (isGetFilter) {
+                    // For GET search/filter forms, show skeletons in property grids/tables/lists
+                    showSkeletons();
+                } else {
+                    // For POST/PUT/PATCH/DELETE or explicit overlay forms, show full-page progress overlay
+                    const msg = inferOverlayMessaging(form, submitter);
+                    showOverlay(msg.title, msg.subtitle);
+                }
+            });
+
+            // Handle auto-submitting selects (e.g. onchange="this.form.submit()")
+            document.addEventListener('change', function (event) {
+                const target = event.target;
+                if (target instanceof HTMLSelectElement && target.form) {
+                    const onchangeAttr = target.getAttribute('onchange') || '';
+                    if (onchangeAttr.includes('submit')) {
+                        startTopProgress();
+                        const msg = inferOverlayMessaging(target.form, null);
+                        showOverlay(msg.title, msg.subtitle);
+                    }
+                }
+            });
+
+            // Handle filter pills, reset buttons, tabs, and pagination links to show skeletons
+            document.addEventListener('click', function (event) {
+                const link = event.target.closest('a[href]');
+                if (!link) return;
+                if (link.target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+
+                const href = link.getAttribute('href') || '';
+                if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+                startTopProgress();
+
+                if (
+                    link.hasAttribute('data-skeleton-trigger') ||
+                    href.includes('page=') ||
+                    href.includes('tab=') ||
+                    href.includes('transaction_type=') ||
+                    href.includes('location=') ||
+                    href.includes('flagged=') ||
+                    link.closest('[data-skeleton-nav]')
+                ) {
+                    showSkeletons();
+                }
+
+                if (link.hasAttribute('data-loading-overlay')) {
+                    showOverlay(
+                        link.getAttribute('data-loading-title') || 'Loading Page...',
+                        link.getAttribute('data-loading-subtitle') || 'Please wait a moment...'
+                    );
+                }
+            });
+
+            // Progressive Image Skeleton Shimmer for Property Card & Table Images
+            function initImageSkeletons() {
+                document.querySelectorAll('main img').forEach(function (img) {
+                    if (img.complete && img.naturalHeight > 0) return;
+                    img.classList.add('np-skeleton-shimmer');
+                    const clearShimmer = function () {
+                        img.classList.remove('np-skeleton-shimmer');
+                    };
+                    img.addEventListener('load', clearShimmer, { once: true });
+                    img.addEventListener('error', clearShimmer, { once: true });
+                });
+            }
+
+            // Reset states when navigating back/forward via bfcache
+            window.addEventListener('pageshow', function () {
+                hideOverlay();
+                hideSkeletons();
+                finishTopProgress();
+                document.querySelectorAll('[data-np-spinning="true"]').forEach(function (btn) {
+                    btn.disabled = false;
+                    btn.dataset.npSpinning = 'false';
+                    btn.classList.remove('np-btn-loading');
+                });
+            });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initImageSkeletons);
+            } else {
+                initImageSkeletons();
+            }
+
+            window.NaijaPropsLoader = {
+                startTopProgress: startTopProgress,
+                finishTopProgress: finishTopProgress,
+                showOverlay: showOverlay,
+                hideOverlay: hideOverlay,
+                showSkeletons: showSkeletons,
+                hideSkeletons: hideSkeletons
+            };
+        })();
+    </script>
 </body>
 </html>

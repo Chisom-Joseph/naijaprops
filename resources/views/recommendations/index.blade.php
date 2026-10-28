@@ -144,7 +144,11 @@
 
                 <!-- 6. Submit Button -->
                 <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-1.5">
+                    <button
+                        type="submit"
+                        data-loading-text="Ranking..."
+                        class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-1.5"
+                    >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
@@ -200,8 +204,13 @@
         </div>
     </div>
 
+    <!-- Skeleton Loader for Ranked Recommendation Cards -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.property-card :count="6" />
+    </div>
+
     <!-- Ranked Recommendation Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($recommendations as $item)
             <x-recommended-property-card
                 :item="$item"

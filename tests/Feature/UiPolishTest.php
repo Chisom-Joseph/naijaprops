@@ -68,4 +68,47 @@ class UiPolishTest extends TestCase
         $response->assertSee('Manage Users');
         $response->assertSee('Listing Reports');
     }
+
+    public function test_loading_experience_button_spinners_skeletons_and_overlay_render_correctly(): void
+    {
+        // 1. Login & Register button spinners and loading overlay attributes
+        $loginResponse = $this->get(route('login'));
+        $loginResponse->assertOk();
+        $loginResponse->assertSee('data-loading-text="Signing in..."', false);
+        $loginResponse->assertSee('data-loading-overlay="true"', false);
+        $loginResponse->assertSee('np-loading-overlay', false);
+        $loginResponse->assertSee('np-top-progress-bar', false);
+
+        $registerResponse = $this->get(route('register'));
+        $registerResponse->assertOk();
+        $registerResponse->assertSee('data-loading-text="Creating account..."', false);
+        $registerResponse->assertSee('data-loading-overlay="true"', false);
+
+        // 2. Property Cards skeleton loader on properties index
+        $propertiesResponse = $this->get(route('properties.index'));
+        $propertiesResponse->assertOk();
+        $propertiesResponse->assertSee('data-np-skeleton', false);
+        $propertiesResponse->assertSee('np-skeleton-shimmer', false);
+        $propertiesResponse->assertSee('data-loading-text="Filtering..."', false);
+
+        // 3. Admin Tables & Lists skeleton loaders
+        $admin = User::create([
+            'full_name' => 'Admin Loader Test',
+            'email' => 'admin.loader@naijaprops.ng',
+            'password' => 'password123',
+            'phone' => '08090000010',
+            'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        $adminPropsResponse = $this->actingAs($admin)->get(route('admin.properties.index'));
+        $adminPropsResponse->assertOk();
+        $adminPropsResponse->assertSee('data-np-skeleton', false);
+        $adminPropsResponse->assertSee('np-skeleton-shimmer', false);
+
+        $adminReportsResponse = $this->actingAs($admin)->get(route('admin.reports.index'));
+        $adminReportsResponse->assertOk();
+        $adminReportsResponse->assertSee('data-np-skeleton', false);
+        $adminReportsResponse->assertSee('np-skeleton-shimmer', false);
+    }
 }

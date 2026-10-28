@@ -58,15 +58,20 @@
                     <option value="active" @selected(request('status') === 'active')>Active</option>
                     <option value="inactive" @selected(request('status') === 'inactive')>Inactive</option>
                 </select>
-                <button type="submit" class="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition shrink-0">
+                <button type="submit" data-loading-text="Filtering..." class="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition shrink-0">
                     Filter
                 </button>
             </div>
         </form>
     </div>
 
+    <!-- Skeleton Loader for Users Table -->
+    <div data-np-skeleton class="hidden mb-6">
+        <x-skeletons.table-rows :rows="6" :showThumbnail="false" />
+    </div>
+
     <!-- Users Table -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div data-np-content class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-opacity duration-200">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>

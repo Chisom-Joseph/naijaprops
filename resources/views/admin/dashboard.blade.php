@@ -136,8 +136,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Left 2 Columns: Recent Users & Recent Properties Moderation -->
         <div class="lg:col-span-2 space-y-8">
+            <!-- Skeleton Loader for Admin Dashboard Tables & Lists -->
+            <div data-np-skeleton class="hidden space-y-6">
+                <x-skeletons.list-items :items="3" variant="listing" />
+                <x-skeletons.table-rows :rows="4" :showThumbnail="false" />
+            </div>
+
             <!-- Recent Property Listings Moderation Table -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div data-np-content class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-opacity duration-200">
                 <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-900">Recent Property Listings</h2>

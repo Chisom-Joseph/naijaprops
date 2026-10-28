@@ -370,7 +370,14 @@
                             Ask {{ $property->owner?->full_name ?? 'the property owner' }} about inspection dates, title documents, or price negotiation.
                         </p>
 
-                        <form method="POST" action="{{ route('enquiries.store', $property) }}" class="space-y-3.5">
+                        <form
+                            method="POST"
+                            action="{{ route('enquiries.store', $property) }}"
+                            data-loading-overlay="true"
+                            data-loading-title="Sending Property Enquiry..."
+                            data-loading-subtitle="Delivering your message directly to the property provider..."
+                            class="space-y-3.5"
+                        >
                             @csrf
                             <div>
                                 <label for="enquiry_message" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -393,6 +400,7 @@
 
                             <button
                                 type="submit"
+                                data-loading-text="Sending enquiry..."
                                 class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold text-sm py-2.5 px-4 rounded-xl shadow-sm transition inline-flex items-center justify-center gap-2"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -571,6 +579,7 @@
 
                             <button
                                 type="submit"
+                                data-loading-text="Submitting report..."
                                 class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition"
                             >
                                 Submit Report to Admin
@@ -610,7 +619,12 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Skeleton Loader for Similar Properties -->
+            <div data-np-skeleton class="hidden mb-6">
+                <x-skeletons.property-card :count="3" />
+            </div>
+
+            <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
                 @foreach($similarRecommendations as $simItem)
                     <x-recommended-property-card
                         :item="$simItem"
