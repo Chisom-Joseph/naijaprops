@@ -39,6 +39,9 @@
                         <a href="{{ route('properties.index') }}" class="{{ request()->routeIs('properties.index', 'properties.show') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
                             Browse Properties
                         </a>
+                        <a href="{{ route('recommendations.index') }}" class="{{ request()->routeIs('recommendations.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }} inline-flex items-center gap-1">
+                            <span>AI Recommendations</span>
+                        </a>
                         @auth
                             @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
@@ -126,6 +129,7 @@
         <div x-show="mobileOpen" class="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-4 space-y-2">
             <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Home</a>
             <a href="{{ route('properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Browse Properties</a>
+            <a href="{{ route('recommendations.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">AI Recommendations</a>
             @auth
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Admin Dashboard</a>

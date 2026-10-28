@@ -592,54 +592,31 @@
         </div>
     </div>
 
-    <!-- Similar Properties Section -->
-    @if($similarProperties->isNotEmpty())
+    <!-- AI Content-Based Similar Properties Section -->
+    @if(isset($similarRecommendations) && $similarRecommendations->isNotEmpty())
         <div class="mt-12 pt-8 border-t border-slate-200">
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-3">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900">Similar Properties You May Like</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Other available listings matching location or property type</p>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-900 mb-1.5">
+                        AI Content-Based Similarity Ranking
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Similar Properties Recommended For You</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        Ranked by location, property type, Naira (₦) price bracket, and bedrooms similarity to this listing
+                    </p>
                 </div>
-                <a href="{{ route('properties.index') }}" class="text-xs font-semibold text-blue-800 hover:underline">
-                    Browse All &rarr;
+                <a href="{{ route('recommendations.index', ['location' => $property->location, 'property_type' => $property->property_type]) }}" class="text-xs font-bold text-blue-800 hover:underline">
+                    Explore More AI Recommendations &rarr;
                 </a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($similarProperties as $sim)
-                    <a href="{{ route('properties.show', $sim) }}" class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
-                        <div class="relative h-48 bg-slate-200 overflow-hidden">
-                            <img
-                                src="{{ $sim->primary_image_url }}"
-                                alt="{{ $sim->title }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                            >
-                            <div class="absolute top-3 left-3 flex items-center gap-1.5">
-                                <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase
-                                    {{ $sim->transaction_type === 'sale' ? 'bg-blue-800 text-white' : 'bg-emerald-700 text-white' }}">
-                                    For {{ ucfirst($sim->transaction_type) }}
-                                </span>
-                                <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-white/95 text-slate-800">
-                                    {{ $sim->property_type_label }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col justify-between">
-                            <div>
-                                <p class="text-lg font-extrabold text-blue-900">{{ $sim->formatted_price }}</p>
-                                <h3 class="text-sm font-bold text-slate-900 group-hover:text-blue-800 mt-1 line-clamp-1">{{ $sim->title }}</h3>
-                                <p class="text-xs text-slate-500 mt-1">{{ $sim->location }}</p>
-                            </div>
-                            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                                <span>
-                                    @if(!is_null($sim->bedrooms)) {{ $sim->bedrooms }} Beds @endif
-                                    @if(!is_null($sim->bathrooms)) &bull; {{ $sim->bathrooms }} Baths @endif
-                                    @if(is_null($sim->bedrooms) && is_null($sim->bathrooms)) Land / Plot @endif
-                                </span>
-                                <span class="text-blue-800 font-semibold">View &rarr;</span>
-                            </div>
-                        </div>
-                    </a>
+                @foreach($similarRecommendations as $simItem)
+                    <x-recommended-property-card
+                        :item="$simItem"
+                        :savedPropertyIds="$savedPropertyIds ?? []"
+                        :showBreakdown="true"
+                    />
                 @endforeach
             </div>
         </div>

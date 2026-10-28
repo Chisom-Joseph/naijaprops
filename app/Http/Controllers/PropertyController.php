@@ -8,6 +8,7 @@ use App\Http\Requests\Property\UpdatePropertyRequest;
 use App\Http\Requests\Property\UpdatePropertyStatusRequest;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Services\PropertyRecommendationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +17,10 @@ use Illuminate\View\View;
 
 class PropertyController extends Controller
 {
+    public function __construct(
+        private readonly PropertyRecommendationService $recommendationService
+    ) {}
+
     /**
      * Display a paginated list of property listings with advanced search, filtering, and sorting.
      */
@@ -25,6 +30,21 @@ class PropertyController extends Controller
 
         $filters = $request->filters();
 
+        // Remember active search criteria in session to enrich AI recommendation preferences
+        $preferenceKeys = array_filter([
+            'location' => $filters['location'] ?? null,
+            'property_type' => $filters['property_type'] ?? null,
+            'transaction_type' => $filters['transaction_type'] ?? null,
+            'price_range' => $filters['price_range'] ?? null,
+            'min_price' => $filters['min_price'] ?? null,
+            'max_price' => $filters['max_price'] ?? null,
+            'bedrooms' => $filters['bedrooms'] ?? null,
+        ], fn ($val) => $val !== null && $val !== '');
+
+        if (! empty($preferenceKeys)) {
+            $request->session()->put('ai_preferences', $preferenceKeys);
+        }
+
         $properties = Property::query()
             ->with(['primaryImage', 'owner'])
             ->withCount('images')
@@ -32,11 +52,29 @@ class PropertyController extends Controller
             ->paginate(9)
             ->withQueryString();
 
+        $recentlyViewedIds = (array) $request->session()->get('recently_viewed_properties', []);
+
+        $aiResult = $this->recommendationService->getRecommendations(
+            user: $request->user(),
+            explicitPreferences: $preferenceKeys,
+            recentlyViewedIds: $recentlyViewedIds,
+            limit: 3
+        );
+
+        $recommendedProperties = $aiResult['recommendations'];
+        $recommendationProfile = $aiResult['profile'];
+
         $savedPropertyIds = $request->user()
             ? $request->user()->savedProperties()->pluck('property_id')->all()
             : [];
 
-        return view('properties.index', compact('properties', 'filters', 'savedPropertyIds'));
+        return view('properties.index', compact(
+            'properties',
+            'filters',
+            'savedPropertyIds',
+            'recommendedProperties',
+            'recommendationProfile'
+        ));
     }
 
     /**
@@ -139,21 +177,21 @@ class PropertyController extends Controller
         $property->load(['images', 'owner'])
             ->loadCount(['enquiries', 'savedProperties', 'reports']);
 
-        $similarProperties = Property::with(['primaryImage', 'owner'])
-            ->where('id', '!=', $property->id)
-            ->where('status', 'available')
-            ->where(function ($query) use ($property) {
-                $city = trim( collect(explode(',', $property->location))->last() ?? $property->location );
-                $query->where('property_type', $property->property_type)
-                    ->orWhere('location', 'like', "%{$city}%");
-            })
-            ->latest()
-            ->take(3)
-            ->get();
+        // Track recently viewed property IDs in session for content-based recommendations
+        $viewedIds = (array) $request->session()->get('recently_viewed_properties', []);
+        array_unshift($viewedIds, $property->id);
+        $viewedIds = array_slice(array_values(array_unique(array_map('intval', $viewedIds))), 0, 10);
+        $request->session()->put('recently_viewed_properties', $viewedIds);
 
-        $isSaved = $request->user()
-            ? $request->user()->savedProperties()->where('property_id', $property->id)->exists()
-            : false;
+        // Ranked content-based similar properties with "Why suggested" reasons
+        $similarRecommendations = $this->recommendationService->getSimilarProperties($property, 3);
+        $similarProperties = $similarRecommendations->pluck('property');
+
+        $savedPropertyIds = $request->user()
+            ? $request->user()->savedProperties()->pluck('property_id')->all()
+            : [];
+
+        $isSaved = in_array($property->id, $savedPropertyIds, true);
 
         $userEnquiries = $request->user()
             ? $request->user()->enquiries()
@@ -169,7 +207,15 @@ class PropertyController extends Controller
                 ->get()
             : collect();
 
-        return view('properties.show', compact('property', 'similarProperties', 'isSaved', 'userEnquiries', 'userReports'));
+        return view('properties.show', compact(
+            'property',
+            'similarRecommendations',
+            'similarProperties',
+            'savedPropertyIds',
+            'isSaved',
+            'userEnquiries',
+            'userReports'
+        ));
     }
 
     /**

@@ -303,6 +303,39 @@
                 </div>
             </div>
         </div>
+
+        <!-- Personalized AI Recommendations for Buyer / Tenant -->
+        @if(isset($recommendedProperties) && $recommendedProperties->isNotEmpty())
+            <div class="mt-8 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-900 mb-2">
+                            <svg class="w-3.5 h-3.5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            AI-Assisted Recommendations
+                        </span>
+                        <h2 class="text-xl font-extrabold text-slate-900">Tailored Properties Recommended For You</h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            {{ $recommendationProfile['source_label'] ?? 'Ranked based on your saved properties, enquiries, and preferred locations' }}
+                        </p>
+                    </div>
+                    <a href="{{ route('recommendations.index') }}" class="text-xs font-bold text-blue-800 hover:bg-blue-100 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl transition shrink-0">
+                        View All &amp; Customize Preferences &rarr;
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($recommendedProperties as $recItem)
+                        <x-recommended-property-card
+                            :item="$recItem"
+                            :savedPropertyIds="$savedPropertyIds ?? []"
+                            :showBreakdown="true"
+                        />
+                    @endforeach
+                </div>
+            </div>
+        @endif
     @endif
 </div>
 @endsection

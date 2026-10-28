@@ -300,6 +300,51 @@ class DatabaseSeeder extends Seeder
                     'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80',
                 ],
             ],
+            [
+                'owner_id' => $agent2->id,
+                'title' => '4 Bedroom Contemporary Smart Duplex in Lekki Phase 1',
+                'description' => 'Newly built 4-bedroom semi-detached smart duplex in Lekki Phase 1, Lagos. Features home automation, fitted kitchen with island, family lounge, boys quarters, and 24-hour estate security.',
+                'property_type' => 'duplex',
+                'transaction_type' => 'sale',
+                'price' => 275000000.00,
+                'location' => 'Lekki Phase 1, Lagos',
+                'bedrooms' => 4,
+                'bathrooms' => 5,
+                'status' => 'available',
+                'images' => [
+                    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80',
+                ],
+            ],
+            [
+                'owner_id' => $agent1->id,
+                'title' => '5 Bedroom Detached Duplex with Rooftop Terrace in Guzape',
+                'description' => 'Architecturally striking 5-bedroom detached duplex in Guzape, Abuja. Boasts panoramic hill views, rooftop lounge, private cinema, smart security locks, and Certificate of Occupancy (C of O).',
+                'property_type' => 'duplex',
+                'transaction_type' => 'sale',
+                'price' => 290000000.00,
+                'location' => 'Guzape, Abuja',
+                'bedrooms' => 5,
+                'bathrooms' => 6,
+                'status' => 'available',
+                'images' => [
+                    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80',
+                ],
+            ],
+            [
+                'owner_id' => $owner2->id,
+                'title' => 'Luxury 4 Bedroom Serviced Duplex for Rent in Old GRA Port Harcourt',
+                'description' => 'Executive 4-bedroom semi-detached duplex available for corporate or family lease in Old GRA, Port Harcourt. Steady federal light, standby generator, security post, and landscaped compound.',
+                'property_type' => 'duplex',
+                'transaction_type' => 'rent',
+                'price' => 9500000.00,
+                'location' => 'Old GRA, Port Harcourt',
+                'bedrooms' => 4,
+                'bathrooms' => 5,
+                'status' => 'available',
+                'images' => [
+                    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80',
+                ],
+            ],
         ];
 
         $seededProperties = [];

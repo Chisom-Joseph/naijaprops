@@ -7,14 +7,16 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SavedPropertyController;
 use App\Models\Property;
+use App\Services\PropertyRecommendationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public Home Page
-Route::get('/', function (Request $request) {
+Route::get('/', function (Request $request, PropertyRecommendationService $recommendationService) {
     $featuredProperties = Property::with(['primaryImage', 'owner'])
         ->withCount('images')
         ->where('status', 'available')
@@ -22,15 +24,34 @@ Route::get('/', function (Request $request) {
         ->take(6)
         ->get();
 
+    $sessionPreferences = (array) $request->session()->get('ai_preferences', []);
+    $recentlyViewedIds = (array) $request->session()->get('recently_viewed_properties', []);
+
+    $aiResult = $recommendationService->getRecommendations(
+        user: $request->user(),
+        explicitPreferences: $sessionPreferences,
+        recentlyViewedIds: $recentlyViewedIds,
+        limit: 3
+    );
+
+    $recommendedProperties = $aiResult['recommendations'];
+    $recommendationProfile = $aiResult['profile'];
+
     $savedPropertyIds = $request->user()
         ? $request->user()->savedProperties()->pluck('property_id')->all()
         : [];
 
-    return view('welcome', compact('featuredProperties', 'savedPropertyIds'));
+    return view('welcome', compact(
+        'featuredProperties',
+        'recommendedProperties',
+        'recommendationProfile',
+        'savedPropertyIds'
+    ));
 })->name('home');
 
-// Public Property Browsing Routes (static auth routes defined below before {property})
+// Public Property Browsing & AI Recommendations Routes (static auth routes defined below before {property})
 Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
+Route::get('/recommendations', [RecommendationController::class, 'index'])->name('recommendations.index');
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {

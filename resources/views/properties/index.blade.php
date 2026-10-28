@@ -493,5 +493,27 @@
             {{ $properties->links() }}
         </div>
     @endif
+
+    <!-- AI-Assisted Recommendations Callout Banner on Search Page -->
+    <div class="mt-10 bg-gradient-to-r from-blue-900 to-blue-800 rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-700/80 text-amber-300 border border-blue-500/40 mb-2">
+                AI-Assisted Recommendations
+            </span>
+            <h3 class="text-lg font-extrabold">Want Ranked Property Suggestions with “Why Suggested” Explanations?</h3>
+            <p class="text-xs text-blue-100 mt-1">
+                Use our content-based recommendation engine to score listings by location similarity, property type, Naira budget, and bedrooms.
+            </p>
+        </div>
+        <a href="{{ route('recommendations.index', array_filter([
+            'location' => request('location'),
+            'property_type' => request('property_type'),
+            'transaction_type' => request('transaction_type'),
+            'price_range' => request('price_range'),
+            'bedrooms' => request('bedrooms'),
+        ])) }}" class="bg-white text-blue-900 hover:bg-blue-50 font-bold text-xs px-4 py-3 rounded-xl shadow-sm transition shrink-0 text-center">
+            Open AI Recommendation Engine &rarr;
+        </a>
+    </div>
 </section>
 @endsection
