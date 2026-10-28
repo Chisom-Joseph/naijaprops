@@ -496,7 +496,6 @@
                         </div>
                         <div>
                             <span class="text-xl font-extrabold tracking-tight text-blue-900 dark:text-blue-400">Naija<span class="text-blue-600 dark:text-blue-300">Props</span></span>
-                            <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded ml-1 border border-blue-200 dark:border-blue-700">NG</span>
                         </div>
                     </a>
 
@@ -512,38 +511,22 @@
                             <span>AI Recommendations</span>
                         </a>
                         @auth
-                            @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="np-nav-link {{ request()->routeIs('admin.dashboard') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Admin Dashboard
-                                </a>
-                                <a href="{{ route('admin.properties.index') }}" class="np-nav-link {{ request()->routeIs('admin.properties.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Manage Properties
-                                </a>
-                                <a href="{{ route('admin.users.index') }}" class="np-nav-link {{ request()->routeIs('admin.users.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Manage Users
-                                </a>
-                                <a href="{{ route('admin.reports.index') }}" class="np-nav-link {{ request()->routeIs('admin.reports.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Reports
-                                </a>
-                            @else
-                                <a href="{{ route('dashboard') }}" class="np-nav-link {{ request()->routeIs('dashboard') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    My Dashboard
-                                </a>
-                                <a href="{{ route('saved-properties.index') }}" class="np-nav-link {{ request()->routeIs('saved-properties.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Saved Properties
-                                </a>
-                                <a href="{{ route('enquiries.index') }}" class="np-nav-link {{ request()->routeIs('enquiries.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                    Enquiries
-                                </a>
-                                @can('create', \App\Models\Property::class)
-                                    <a href="{{ route('properties.my') }}" class="np-nav-link {{ request()->routeIs('properties.my') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
-                                        My Listings
+                            @unless($showDashboardSidebar)
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="np-nav-link {{ request()->routeIs('admin.*') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
+                                        Admin Panel
                                     </a>
-                                    <a href="{{ route('properties.create') }}" class="np-btn-interactive inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/70 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700 font-semibold text-xs px-3 py-1.5 rounded-lg transition">
-                                        + List Property
+                                @else
+                                    <a href="{{ route('dashboard') }}" class="np-nav-link {{ request()->routeIs('dashboard') ? 'np-nav-link-active text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
+                                        My Dashboard
                                     </a>
-                                @endcan
-                            @endif
+                                    @can('create', \App\Models\Property::class)
+                                        <a href="{{ route('properties.create') }}" class="np-btn-interactive inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/70 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700 font-semibold text-xs px-3 py-1.5 rounded-lg transition">
+                                            + List Property
+                                        </a>
+                                    @endcan
+                                @endif
+                            @endunless
                         @endauth
                     </nav>
                 </div>
@@ -769,6 +752,14 @@
                 <main class="flex-1">
                     @yield('content')
                 </main>
+
+                <!-- Compact Dashboard / Admin Footer inside Main Column so Sidebar stays fixed to bottom -->
+                <footer class="bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-12">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <p>&copy; {{ date('Y') }} <span class="font-bold text-slate-700 dark:text-slate-200">NaijaProps</span> — Web-Based Property Listing &amp; Trading System.</p>
+                        <p>Serving Lagos, Abuja &amp; Port Harcourt &bull; All prices in Nigerian Naira (₦).</p>
+                    </div>
+                </footer>
             </div>
         </div>
     @else
@@ -866,63 +857,64 @@
         </svg>
     </button>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800/80">
-                <!-- Col 1: Brand & Overview -->
-                <div class="md:col-span-2 space-y-3">
-                    <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center text-white font-extrabold text-sm shadow-xs">NP</div>
-                        <span class="text-white font-extrabold text-lg tracking-tight">NaijaProps</span>
-                        <span class="text-[10px] font-bold uppercase tracking-wider bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded">NG</span>
+    @unless($showDashboardSidebar)
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800/80">
+                    <!-- Col 1: Brand & Overview -->
+                    <div class="md:col-span-2 space-y-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center text-white font-extrabold text-sm shadow-xs">NP</div>
+                            <span class="text-white font-extrabold text-lg tracking-tight">NaijaProps</span>
+                        </div>
+                        <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+                            Nigeria's centralised web-based property listing and trading platform. Discover verified houses, duplexes, apartments, and land with transparent Naira (₦) pricing and content-based AI recommendations.
+                        </p>
                     </div>
-                    <p class="text-xs text-slate-400 max-w-md leading-relaxed">
-                        Nigeria's centralised web-based property listing and trading platform. Discover verified houses, duplexes, apartments, and land with transparent Naira (₦) pricing and content-based AI recommendations.
+
+                    <!-- Col 2: Nigerian Markets -->
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200">Nigerian Markets</h4>
+                        <ul class="space-y-1.5 text-xs">
+                            <li>
+                                <a href="{{ route('properties.index', ['location' => 'Lagos']) }}" class="hover:text-white transition">Lagos Properties (Lekki, VI, Ikoyi)</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('properties.index', ['location' => 'Abuja']) }}" class="hover:text-white transition">Abuja Properties (Maitama, Guzape, Wuse)</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('properties.index', ['location' => 'Port Harcourt']) }}" class="hover:text-white transition">Port Harcourt Properties (GRA, Peter Odili)</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 3: Quick Platform Links -->
+                    <div class="space-y-2.5">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200">Quick Navigation</h4>
+                        <ul class="space-y-1.5 text-xs">
+                            <li><a href="{{ route('properties.index') }}" class="hover:text-white transition">Browse All Listings</a></li>
+                            <li><a href="{{ route('recommendations.index') }}" class="hover:text-white transition">AI Recommendation Engine</a></li>
+                            @auth
+                                <li><a href="{{ route('dashboard') }}" class="hover:text-white transition">My Account Dashboard</a></li>
+                            @else
+                                <li><a href="{{ route('login') }}" class="hover:text-white transition">Sign In / Register</a></li>
+                            @endguest
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                    <p>
+                        &copy; {{ date('Y') }} NaijaProps — Web-Based Property Listing &amp; Trading System.
+                    </p>
+                    <p>
+                        Serving Lagos, Abuja &amp; Port Harcourt &bull; All prices displayed in Nigerian Naira (₦).
                     </p>
                 </div>
-
-                <!-- Col 2: Nigerian Markets -->
-                <div class="space-y-2.5">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200">Nigerian Markets</h4>
-                    <ul class="space-y-1.5 text-xs">
-                        <li>
-                            <a href="{{ route('properties.index', ['location' => 'Lagos']) }}" class="hover:text-white transition">Lagos Properties (Lekki, VI, Ikoyi)</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('properties.index', ['location' => 'Abuja']) }}" class="hover:text-white transition">Abuja Properties (Maitama, Guzape, Wuse)</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('properties.index', ['location' => 'Port Harcourt']) }}" class="hover:text-white transition">Port Harcourt Properties (GRA, Peter Odili)</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Col 3: Quick Platform Links -->
-                <div class="space-y-2.5">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200">Quick Navigation</h4>
-                    <ul class="space-y-1.5 text-xs">
-                        <li><a href="{{ route('properties.index') }}" class="hover:text-white transition">Browse All Listings</a></li>
-                        <li><a href="{{ route('recommendations.index') }}" class="hover:text-white transition">AI Recommendation Engine</a></li>
-                        @auth
-                            <li><a href="{{ route('dashboard') }}" class="hover:text-white transition">My Account Dashboard</a></li>
-                        @else
-                            <li><a href="{{ route('login') }}" class="hover:text-white transition">Sign In / Register</a></li>
-                        @endguest
-                    </ul>
-                </div>
             </div>
-
-            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                <p>
-                    &copy; {{ date('Y') }} NaijaProps — Web-Based Property Listing &amp; Trading System.
-                </p>
-                <p>
-                    Serving Lagos, Abuja &amp; Port Harcourt &bull; All prices displayed in Nigerian Naira (₦).
-                </p>
-            </div>
-        </div>
-    </footer>
+        </footer>
+    @endunless
 
     <!-- Global Loading Experience Controller: Button Spinners, Skeleton Loaders & Progress Overlay -->
     <script>

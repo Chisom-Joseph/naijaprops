@@ -53,14 +53,14 @@
         aria-hidden="true"
     ></div>
 
-    <!-- Sidebar Container (Slide-over Drawer on Mobile, Sticky Collapsible Column on Desktop) -->
+    <!-- Sidebar Container (Slide-over Drawer on Mobile, Sticky Full-Height Column on Desktop) -->
     <aside
         x-cloak
         :class="[
             mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
             sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
         ]"
-        class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 ease-in-out lg:static lg:z-auto lg:min-h-[calc(100vh-4rem)] shrink-0 shadow-xl lg:shadow-none"
+        class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 ease-in-out lg:sticky lg:top-16 lg:z-30 lg:h-[calc(100vh-4rem)] lg:max-h-[calc(100vh-4rem)] lg:self-start shrink-0 shadow-xl lg:shadow-none overflow-hidden"
         aria-label="{{ $isAdminMode ? 'Admin Dashboard Sidebar' : 'User Dashboard Sidebar' }}"
     >
         <!-- Sidebar Top Profile & Collapse Header -->
