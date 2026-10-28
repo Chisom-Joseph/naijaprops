@@ -27,14 +27,6 @@
             $pendingEnquiriesBadge = $currentUser->enquiries()->count();
         }
     }
-
-    $initials = $currentUser
-        ? collect(explode(' ', trim($currentUser->full_name)))
-            ->filter()
-            ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
-            ->take(2)
-            ->implode('')
-        : 'NP';
 @endphp
 
 @if($currentUser)
@@ -63,38 +55,31 @@
         class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 ease-in-out lg:sticky lg:top-16 lg:z-30 lg:h-[calc(100vh-4rem)] lg:max-h-[calc(100vh-4rem)] lg:self-start shrink-0 shadow-xl lg:shadow-none overflow-hidden"
         aria-label="{{ $isAdminMode ? 'Admin Dashboard Sidebar' : 'User Dashboard Sidebar' }}"
     >
-        <!-- Sidebar Top Profile & Collapse Header -->
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-3 min-w-0" :class="sidebarCollapsed ? 'lg:justify-center lg:w-full' : ''">
-                <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center font-extrabold text-sm text-white shadow-xs
-                    {{ $isAdminMode ? 'bg-gradient-to-br from-purple-700 to-blue-800' : 'bg-gradient-to-br from-blue-800 to-blue-600' }}">
-                    {{ $initials }}
-                </div>
-                <div x-show="!sidebarCollapsed" x-transition.opacity class="min-w-0 flex-1">
-                    <p class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
-                        {{ $currentUser->full_name }}
-                    </p>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                            @if($currentUser->isAdmin()) bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300
-                            @elseif($currentUser->canListProperties()) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
-                            @else bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 @endif">
-                            {{ $currentUser->role_label }}
-                        </span>
-                    </div>
-                </div>
-            </div>
+        <!-- Sidebar Header: Section Label + Single Collapse/Expand Control -->
+        <div
+            class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2"
+            :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"
+        >
+            <span
+                x-show="!sidebarCollapsed"
+                class="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate"
+            >
+                {{ $isAdminMode ? 'Admin Control Center' : 'My Dashboard' }}
+            </span>
 
-            <!-- Desktop Collapse Button (shown in header when expanded) -->
+            <!-- Single Desktop Collapse / Expand Button -->
             <button
                 type="button"
                 @click="toggleSidebarCollapse()"
-                x-show="!sidebarCollapsed"
-                title="Collapse sidebar"
-                class="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                aria-label="Toggle sidebar width"
+                class="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
             >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg x-show="!sidebarCollapsed" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                </svg>
+                <svg x-show="sidebarCollapsed" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
                 </svg>
             </button>
 
@@ -111,32 +96,11 @@
             </button>
         </div>
 
-        <!-- Expand Button Strip when Desktop Sidebar is Collapsed -->
-        <div x-show="sidebarCollapsed" class="hidden lg:flex justify-center py-2 border-b border-slate-100 dark:border-slate-800/80">
-            <button
-                type="button"
-                @click="toggleSidebarCollapse()"
-                title="Expand sidebar"
-                class="inline-flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
-            >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
-                </svg>
-            </button>
-        </div>
-
         <!-- Navigation Links -->
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
             @if($isAdminMode)
                 <!-- ADMIN DASHBOARD NAVIGATION -->
                 <div class="space-y-1">
-                    <p
-                        x-show="!sidebarCollapsed"
-                        class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2"
-                    >
-                        Admin Control Center
-                    </p>
-
                     <!-- Admin Overview -->
                     <a
                         href="{{ route('admin.dashboard') }}"
@@ -297,13 +261,6 @@
             @else
                 <!-- USER DASHBOARD NAVIGATION (Owners, Agents, Buyers/Tenants) -->
                 <div class="space-y-1">
-                    <p
-                        x-show="!sidebarCollapsed"
-                        class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2"
-                    >
-                        My Dashboard
-                    </p>
-
                     <!-- Dashboard Overview -->
                     <a
                         href="{{ route('dashboard') }}"

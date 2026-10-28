@@ -475,19 +475,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
                             </svg>
                         </button>
-
-                        <!-- Desktop Sidebar Collapse/Expand Trigger -->
-                        <button
-                            type="button"
-                            @click="toggleSidebarCollapse()"
-                            class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-800 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
-                            :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-                            aria-label="Toggle sidebar width"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
-                            </svg>
-                        </button>
                     @endif
 
                     <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group">
@@ -664,23 +651,6 @@
             <x-dashboard-sidebar :mode="$sidebarMode" />
 
             <div class="flex-1 min-w-0 flex flex-col">
-                <!-- Mobile Quick Sidebar Bar for Dashboard Pages -->
-                <div class="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between">
-                    <button
-                        type="button"
-                        @click="mobileSidebarOpen = true"
-                        class="inline-flex items-center gap-2 text-xs font-bold text-blue-800 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-xl"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
-                        </svg>
-                        <span>{{ $sidebarMode === 'admin' ? 'Admin Menu' : 'Dashboard Menu' }}</span>
-                    </button>
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
-                        {{ auth()->user()->role_label }}
-                    </span>
-                </div>
-
                 <!-- Flash Notifications inside Dashboard Main Content -->
                 @if(session('success'))
                     <div
