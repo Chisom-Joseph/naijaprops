@@ -70,8 +70,82 @@
         html.dark .text-blue-900 {
             color: #93c5fd !important;
         }
-        html.dark .text-blue-800 {
+        html.dark .text-blue-800,
+        html.dark .text-blue-700 {
             color: #60a5fa !important;
+        }
+        html.dark .bg-blue-50,
+        html.dark [class*="bg-blue-50/"] {
+            background-color: rgba(30, 58, 138, 0.35) !important;
+        }
+        html.dark .bg-blue-100 {
+            background-color: rgba(30, 64, 175, 0.45) !important;
+        }
+        html.dark .border-blue-100,
+        html.dark .border-blue-200 {
+            border-color: rgba(59, 130, 246, 0.35) !important;
+        }
+        html.dark .bg-emerald-50,
+        html.dark [class*="bg-emerald-50/"] {
+            background-color: rgba(6, 78, 59, 0.35) !important;
+        }
+        html.dark .bg-emerald-100 {
+            background-color: rgba(6, 95, 70, 0.45) !important;
+        }
+        html.dark .text-emerald-900,
+        html.dark .text-emerald-800,
+        html.dark .text-emerald-700 {
+            color: #6ee7b7 !important;
+        }
+        html.dark .border-emerald-100,
+        html.dark .border-emerald-200 {
+            border-color: rgba(16, 185, 129, 0.35) !important;
+        }
+        html.dark .bg-amber-50,
+        html.dark [class*="bg-amber-50/"] {
+            background-color: rgba(120, 53, 15, 0.35) !important;
+        }
+        html.dark .bg-amber-100 {
+            background-color: rgba(146, 64, 14, 0.45) !important;
+        }
+        html.dark .text-amber-900,
+        html.dark .text-amber-800,
+        html.dark .text-amber-700 {
+            color: #fcd34d !important;
+        }
+        html.dark .border-amber-100,
+        html.dark .border-amber-200 {
+            border-color: rgba(245, 158, 11, 0.35) !important;
+        }
+        html.dark .bg-red-50,
+        html.dark [class*="bg-red-50/"] {
+            background-color: rgba(127, 29, 29, 0.35) !important;
+        }
+        html.dark .bg-red-100 {
+            background-color: rgba(153, 27, 27, 0.45) !important;
+        }
+        html.dark .text-red-900,
+        html.dark .text-red-800,
+        html.dark .text-red-700 {
+            color: #fca5a5 !important;
+        }
+        html.dark .border-red-100,
+        html.dark .border-red-200 {
+            border-color: rgba(239, 68, 68, 0.35) !important;
+        }
+        html.dark .bg-purple-50,
+        html.dark .bg-purple-100 {
+            background-color: rgba(88, 28, 135, 0.4) !important;
+        }
+        html.dark .text-purple-800 {
+            color: #d8b4fe !important;
+        }
+        html.dark .bg-indigo-50,
+        html.dark .bg-indigo-100 {
+            background-color: rgba(49, 46, 129, 0.4) !important;
+        }
+        html.dark .text-indigo-800 {
+            color: #a5b4fc !important;
         }
         html.dark .border-slate-200,
         html.dark .border-slate-100,

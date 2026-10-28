@@ -26,34 +26,58 @@
                         <!-- Buyer / Tenant -->
                         <label
                             @click="selectedRole = 'buyer'"
-                            :class="selectedRole === 'buyer' ? 'border-blue-700 bg-blue-50/70 ring-2 ring-blue-700/20' : 'border-slate-200 hover:border-slate-300 bg-white'"
-                            class="cursor-pointer rounded-xl border p-3 text-center transition flex flex-col items-center justify-center"
+                            :class="selectedRole === 'buyer'
+                                ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-950/80 ring-2 ring-blue-600/20 dark:ring-blue-400/30'
+                                : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-slate-500 bg-white dark:bg-slate-800/70'"
+                            class="relative cursor-pointer rounded-xl border p-3.5 text-center transition flex flex-col items-center justify-center"
                         >
                             <input type="radio" name="role" value="buyer" class="sr-only" x-model="selectedRole">
-                            <span class="text-sm font-bold text-slate-900">Buyer / Tenant</span>
-                            <span class="text-[11px] text-slate-500 mt-0.5">Search &amp; enquire</span>
+                            <span
+                                :class="selectedRole === 'buyer' ? 'text-blue-900 dark:text-blue-200' : 'text-slate-900 dark:text-slate-100'"
+                                class="text-sm font-bold"
+                            >Buyer / Tenant</span>
+                            <span
+                                :class="selectedRole === 'buyer' ? 'text-blue-700 dark:text-blue-300/90' : 'text-slate-500 dark:text-slate-400'"
+                                class="text-[11px] mt-0.5"
+                            >Search &amp; enquire</span>
                         </label>
 
                         <!-- Property Owner -->
                         <label
                             @click="selectedRole = 'owner'"
-                            :class="selectedRole === 'owner' ? 'border-blue-700 bg-blue-50/70 ring-2 ring-blue-700/20' : 'border-slate-200 hover:border-slate-300 bg-white'"
-                            class="cursor-pointer rounded-xl border p-3 text-center transition flex flex-col items-center justify-center"
+                            :class="selectedRole === 'owner'
+                                ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-950/80 ring-2 ring-blue-600/20 dark:ring-blue-400/30'
+                                : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-slate-500 bg-white dark:bg-slate-800/70'"
+                            class="relative cursor-pointer rounded-xl border p-3.5 text-center transition flex flex-col items-center justify-center"
                         >
                             <input type="radio" name="role" value="owner" class="sr-only" x-model="selectedRole">
-                            <span class="text-sm font-bold text-slate-900">Property Owner</span>
-                            <span class="text-[11px] text-slate-500 mt-0.5">List own properties</span>
+                            <span
+                                :class="selectedRole === 'owner' ? 'text-blue-900 dark:text-blue-200' : 'text-slate-900 dark:text-slate-100'"
+                                class="text-sm font-bold"
+                            >Property Owner</span>
+                            <span
+                                :class="selectedRole === 'owner' ? 'text-blue-700 dark:text-blue-300/90' : 'text-slate-500 dark:text-slate-400'"
+                                class="text-[11px] mt-0.5"
+                            >List own properties</span>
                         </label>
 
                         <!-- Real Estate Agent -->
                         <label
                             @click="selectedRole = 'agent'"
-                            :class="selectedRole === 'agent' ? 'border-blue-700 bg-blue-50/70 ring-2 ring-blue-700/20' : 'border-slate-200 hover:border-slate-300 bg-white'"
-                            class="cursor-pointer rounded-xl border p-3 text-center transition flex flex-col items-center justify-center"
+                            :class="selectedRole === 'agent'
+                                ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-950/80 ring-2 ring-blue-600/20 dark:ring-blue-400/30'
+                                : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-slate-500 bg-white dark:bg-slate-800/70'"
+                            class="relative cursor-pointer rounded-xl border p-3.5 text-center transition flex flex-col items-center justify-center"
                         >
                             <input type="radio" name="role" value="agent" class="sr-only" x-model="selectedRole">
-                            <span class="text-sm font-bold text-slate-900">Agent</span>
-                            <span class="text-[11px] text-slate-500 mt-0.5">Manage client listings</span>
+                            <span
+                                :class="selectedRole === 'agent' ? 'text-blue-900 dark:text-blue-200' : 'text-slate-900 dark:text-slate-100'"
+                                class="text-sm font-bold"
+                            >Agent</span>
+                            <span
+                                :class="selectedRole === 'agent' ? 'text-blue-700 dark:text-blue-300/90' : 'text-slate-500 dark:text-slate-400'"
+                                class="text-[11px] mt-0.5"
+                            >Manage client listings</span>
                         </label>
                     </div>
                     @error('role')
