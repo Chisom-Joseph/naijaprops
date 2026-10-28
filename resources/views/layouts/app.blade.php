@@ -40,6 +40,10 @@
         html {
             scroll-behavior: smooth;
             scroll-padding-top: 5rem;
+            color-scheme: light;
+        }
+        html.dark {
+            color-scheme: dark;
         }
         body { font-family: 'Inter', sans-serif; }
         ::selection {
@@ -245,6 +249,31 @@
             background-color: #0f172a !important;
             color: #f1f5f9 !important;
             border-color: #475569 !important;
+        }
+        html.dark select.bg-emerald-50 {
+            background-color: #064e3b !important;
+            color: #6ee7b7 !important;
+            border-color: rgba(16, 185, 129, 0.45) !important;
+        }
+        html.dark select.bg-amber-50 {
+            background-color: #78350f !important;
+            color: #fcd34d !important;
+            border-color: rgba(245, 158, 11, 0.45) !important;
+        }
+        html.dark select.bg-red-50 {
+            background-color: #7f1d1d !important;
+            color: #fca5a5 !important;
+            border-color: rgba(239, 68, 68, 0.45) !important;
+        }
+        select option,
+        select optgroup {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+        html.dark select option,
+        html.dark select optgroup {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
         }
         html.dark input::placeholder,
         html.dark textarea::placeholder {
