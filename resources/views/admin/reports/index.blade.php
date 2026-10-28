@@ -297,17 +297,22 @@
                 </div>
             </div>
         @empty
-            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">No Property Reports Found</h3>
-                <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                    There are no property reports matching your current filter criteria.
-                </p>
-            </div>
+            <x-empty-state
+                icon="shield"
+                tone="emerald"
+                badge="Trust & Safety Queue Clear"
+                title="No Property Reports Found"
+                description="There are no suspicious listing reports matching your current filter criteria. All flagged listings have been reviewed."
+            >
+                @if(request()->anyFilled(['search', 'status', 'property_id']))
+                    <a href="{{ route('admin.reports.index') }}" class="np-btn-interactive inline-flex items-center gap-2 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        Reset Report Filters
+                    </a>
+                @endif
+                <a href="{{ route('admin.properties.index') }}" class="np-btn-interactive inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-5 py-2.5 rounded-xl transition">
+                    Browse All Properties
+                </a>
+            </x-empty-state>
         @endforelse
     </div>
 

@@ -16,13 +16,13 @@
     $isSaved = in_array($property->id, $savedPropertyIds, true);
 @endphp
 
-<div class="bg-white dark:bg-slate-800/95 rounded-2xl border border-blue-200/80 dark:border-slate-700 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group relative">
+<div data-animate="fade-up" class="np-card-hover bg-white dark:bg-slate-800/95 rounded-2xl border border-blue-200/80 dark:border-slate-700 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group relative">
     <!-- Top Image + Rank & Match Score Badges -->
     <a href="{{ route('properties.show', $property) }}" class="relative h-52 bg-slate-200 dark:bg-slate-800 block overflow-hidden">
         <img
             src="{{ $property->primary_image_url }}"
             alt="{{ $property->title }}"
-            class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+            class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
         >
 
         <!-- Rank Badge & Transaction Type -->
@@ -160,7 +160,7 @@
                         <button
                             type="submit"
                             title="{{ $isSaved ? 'Remove from Saved Properties' : 'Save Property' }}"
-                            class="p-1.5 rounded-lg border transition {{ $isSaved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-red-600' }}"
+                            class="np-heart-btn p-1.5 rounded-lg border transition {{ $isSaved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-red-600' }}"
                         >
                             <svg class="w-3.5 h-3.5 {{ $isSaved ? 'fill-current' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -168,8 +168,9 @@
                         </button>
                     </form>
                 @endauth
-                <a href="{{ route('properties.show', $property) }}" class="text-xs font-bold text-blue-800 hover:underline">
-                    Details &rarr;
+                <a href="{{ route('properties.show', $property) }}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-800 hover:text-blue-700 group-hover:translate-x-0.5 transition">
+                    <span>Details</span>
+                    <span>&rarr;</span>
                 </a>
             </div>
         </div>

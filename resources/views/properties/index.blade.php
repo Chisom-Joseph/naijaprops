@@ -49,7 +49,7 @@
         </div>
 
         <!-- Advanced Search & Filter Card -->
-        <form method="GET" action="{{ route('properties.index') }}" class="bg-white text-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-blue-100">
+        <form data-animate="fade-up" method="GET" action="{{ route('properties.index') }}" class="bg-white text-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-blue-100">
             <!-- Quick Transaction Type Pills + City Shortcuts -->
             <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
                 <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl">
@@ -267,9 +267,9 @@
 </section>
 
 <!-- Results Count Summary & Property Listings Grid -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<section id="listings-results" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Results Bar: "X properties found" + Active Filter Pills -->
-    <div class="bg-white rounded-2xl border border-slate-200 px-5 py-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div data-animate="fade-up" class="bg-white rounded-2xl border border-slate-200 px-5 py-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
             <h2 class="text-base sm:text-lg font-extrabold text-slate-900">
                 {{ number_format($properties->total()) }} {{ \Illuminate\Support\Str::plural('property', $properties->total()) }} found
@@ -359,12 +359,12 @@
     <!-- Property Cards Grid -->
     <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($properties as $property)
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
+            <div data-animate="fade-up" class="np-card-hover bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
                 <a href="{{ route('properties.show', $property) }}" class="relative h-56 bg-slate-200 block overflow-hidden">
                     <img
                         src="{{ $property->primary_image_url }}"
                         alt="{{ $property->title }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
                     >
                     <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm
@@ -448,7 +448,7 @@
                         </div>
 
                         <div class="flex items-center justify-between gap-2">
-                            <a href="{{ route('properties.show', $property) }}" class="w-full text-center bg-slate-100 hover:bg-blue-800 hover:text-white text-slate-800 font-semibold text-xs py-2 px-3 rounded-xl transition">
+                            <a href="{{ route('properties.show', $property) }}" class="np-btn-interactive w-full text-center bg-slate-100 hover:bg-blue-800 hover:text-white text-slate-800 font-semibold text-xs py-2 px-3 rounded-xl transition">
                                 View Property Details
                             </a>
                             @auth
@@ -459,7 +459,7 @@
                                         type="submit"
                                         title="{{ $isCardSaved ? 'Remove from Saved Properties' : 'Save Property' }}"
                                         aria-label="{{ $isCardSaved ? 'Remove from Saved Properties' : 'Save Property' }}"
-                                        class="p-2 rounded-xl border transition {{ $isCardSaved ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200' }}"
+                                        class="np-heart-btn p-2 rounded-xl border transition {{ $isCardSaved ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200' }}"
                                     >
                                         <svg class="w-4 h-4 {{ $isCardSaved ? 'fill-current' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -468,7 +468,7 @@
                                 </form>
 
                                 @can('update', $property)
-                                    <a href="{{ route('properties.edit', $property) }}" class="shrink-0 bg-blue-50 hover:bg-blue-100 text-blue-800 font-semibold text-xs py-2 px-3 rounded-xl border border-blue-200 transition">
+                                    <a href="{{ route('properties.edit', $property) }}" class="np-btn-interactive shrink-0 bg-blue-50 hover:bg-blue-100 text-blue-800 font-semibold text-xs py-2 px-3 rounded-xl border border-blue-200 transition">
                                         Edit
                                     </a>
                                 @endcan
@@ -478,22 +478,34 @@
                 </div>
             </div>
         @empty
-            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-800 flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            <x-empty-state
+                class="col-span-full"
+                icon="search"
+                tone="blue"
+                badge="0 Properties Matched"
+                title="No Matching Properties Found"
+                description="We couldn't find any Nigerian properties matching your exact filter combination. Try broadening your Naira (₦) budget, clearing some filters, or exploring AI-ranked alternatives."
+                :showCityShortcuts="true"
+            >
+                <a href="{{ route('properties.index') }}" data-skeleton-trigger class="np-btn-interactive bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">No Matching Properties Found</h3>
-                <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-                    We couldn't find any properties matching your search criteria. Try clearing some filters or exploring another Nigerian city.
-                </p>
-                <div class="mt-5 flex justify-center gap-3">
-                    <a href="{{ route('properties.index') }}" class="bg-blue-800 hover:bg-blue-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition">
-                        Reset All Filters
-                    </a>
-                </div>
-            </div>
+                    <span>Reset All Filters</span>
+                </a>
+                <a href="{{ route('recommendations.index', array_filter([
+                    'location' => request('location'),
+                    'property_type' => request('property_type'),
+                    'transaction_type' => request('transaction_type'),
+                    'price_range' => request('price_range'),
+                    'bedrooms' => request('bedrooms'),
+                ])) }}" class="np-btn-interactive bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs px-5 py-2.5 rounded-xl transition inline-flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Try AI Recommendations Instead</span>
+                </a>
+            </x-empty-state>
         @endforelse
     </div>
 
@@ -504,7 +516,7 @@
     @endif
 
     <!-- AI-Assisted Recommendations Callout Banner on Search Page -->
-    <div class="mt-10 bg-gradient-to-r from-blue-900 to-blue-800 rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div data-animate="fade-up" class="mt-10 bg-gradient-to-r from-blue-900 to-blue-800 rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-700/80 text-amber-300 border border-blue-500/40 mb-2">
                 AI-Assisted Recommendations

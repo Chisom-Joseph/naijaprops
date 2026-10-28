@@ -206,8 +206,14 @@
                             </div>
                         </div>
                     @empty
-                        <div class="p-6 text-center text-xs text-slate-500">
-                            No properties listed yet.
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="property"
+                                tone="slate"
+                                :compact="true"
+                                title="No Property Listings Yet"
+                                description="Newly created property listings across Nigeria will appear here for moderation."
+                            />
                         </div>
                     @endforelse
                 </div>
@@ -353,8 +359,15 @@
                             </div>
                         </div>
                     @empty
-                        <div class="p-6 text-center text-xs text-slate-500">
-                            No pending or active reports at this time.
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="shield"
+                                tone="emerald"
+                                :compact="true"
+                                badge="All Clear"
+                                title="Zero Pending Reports"
+                                description="There are no pending or active suspicious listing reports requiring moderation right now."
+                            />
                         </div>
                     @endforelse
                 </div>

@@ -218,12 +218,25 @@
                 :showBreakdown="true"
             />
         @empty
-            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <h3 class="text-base font-bold text-slate-900">No Available Properties to Recommend Yet</h3>
-                <p class="text-sm text-slate-500 mt-1">
-                    Once available property listings are published, our AI recommendation engine will rank them here.
-                </p>
-            </div>
+            <x-empty-state
+                class="col-span-full"
+                icon="sparkles"
+                tone="blue"
+                badge="AI Engine Ready"
+                title="No Available Properties Matched Your Criteria"
+                description="Try resetting your custom preference filters or browse the full Nigerian property marketplace across Lagos, Abuja, and Port Harcourt."
+                :showCityShortcuts="true"
+            >
+                @if($hasCustomPreferences)
+                    <a href="{{ route('recommendations.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        <span>Reset AI Preferences</span>
+                    </a>
+                @endif
+                <a href="{{ route('properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs px-5 py-2.5 rounded-xl transition">
+                    <span>Browse All Properties</span>
+                    <span>&rarr;</span>
+                </a>
+            </x-empty-state>
         @endforelse
     </div>
 </section>

@@ -168,8 +168,20 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-slate-500 text-sm">
-                                No users matched your filter criteria.
+                            <td colspan="4" class="p-6">
+                                <x-empty-state
+                                    icon="users"
+                                    tone="slate"
+                                    :compact="true"
+                                    title="No Users Matched Your Filter"
+                                    description="Try clearing your search query, role filter, or account status filter to view all registered NaijaProps users."
+                                >
+                                    @if(request()->anyFilled(['search', 'role', 'status']))
+                                        <a href="{{ route('admin.users.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-bold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                                            Reset User Filters
+                                        </a>
+                                    @endif
+                                </x-empty-state>
                             </td>
                         </tr>
                     @endforelse

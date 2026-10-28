@@ -111,4 +111,27 @@ class UiPolishTest extends TestCase
         $adminReportsResponse->assertSee('data-np-skeleton', false);
         $adminReportsResponse->assertSee('np-skeleton-shimmer', false);
     }
+
+    public function test_smooth_scroll_animations_micro_interactions_and_empty_states_render(): void
+    {
+        $homeResponse = $this->get(route('home'));
+        $homeResponse->assertOk();
+        $homeResponse->assertSee('scroll-smooth', false);
+        $homeResponse->assertSee('scrollToTop()', false);
+        $homeResponse->assertSee('IntersectionObserver', false);
+        $homeResponse->assertSee('data-animate="fade-up"', false);
+        $homeResponse->assertSee('np-card-hover', false);
+        $homeResponse->assertSee('np-btn-interactive', false);
+        $homeResponse->assertSee('#featured-properties', false);
+
+        // Filtered properties index empty state with city shortcuts & reset action
+        $emptySearchResponse = $this->get(route('properties.index', ['location' => 'NonExistentCity123']));
+        $emptySearchResponse->assertOk();
+        $emptySearchResponse->assertSee('No Matching Properties Found');
+        $emptySearchResponse->assertSee('Reset All Filters');
+        $emptySearchResponse->assertSee('Try AI Recommendations Instead');
+        $emptySearchResponse->assertSee('Lagos Properties');
+        $emptySearchResponse->assertSee('Abuja Properties');
+        $emptySearchResponse->assertSee('Port Harcourt Properties');
+    }
 }

@@ -189,15 +189,26 @@
                     </div>
                 </div>
             @empty
-                <div class="p-12 text-center">
-                    <h3 class="text-base font-bold text-slate-900">No Property Listings Found</h3>
-                    <p class="text-sm text-slate-500 mt-1">
-                        Start listing your properties in Lagos, Abuja, or Port Harcourt to reach verified buyers and tenants.
-                    </p>
-                    <a href="{{ route('properties.create') }}" class="mt-4 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
-                        + Create Your First Listing
+                <x-empty-state
+                    class="border-0 rounded-none shadow-none"
+                    icon="property"
+                    tone="blue"
+                    badge="Portfolio Empty"
+                    title="No Property Listings Found"
+                    description="Start listing your verified houses, apartments, duplexes, or land in Lagos, Abuja, or Port Harcourt to connect with buyers and tenants."
+                >
+                    @if(request()->anyFilled(['search', 'status', 'transaction_type']))
+                        <a href="{{ route('properties.my') }}" data-skeleton-trigger class="np-btn-interactive inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-xl transition">
+                            <span>Reset Search Filters</span>
+                        </a>
+                    @endif
+                    <a href="{{ route('properties.create') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Create Your First Listing</span>
                     </a>
-                </div>
+                </x-empty-state>
             @endforelse
         </div>
     </div>

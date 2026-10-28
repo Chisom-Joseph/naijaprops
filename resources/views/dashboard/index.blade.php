@@ -127,11 +127,18 @@
                             </div>
                         </div>
                     @empty
-                        <div class="p-8 text-center text-slate-500 text-sm">
-                            <p>You have not listed any properties yet.</p>
-                            <a href="{{ route('properties.create') }}" class="mt-3 inline-block text-xs font-bold bg-blue-800 text-white px-4 py-2 rounded-xl">
-                                + Create Your First Property Listing
-                            </a>
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="property"
+                                tone="blue"
+                                :compact="true"
+                                title="No Property Listings Yet"
+                                description="Start listing your Nigerian properties across Lagos, Abuja, or Port Harcourt to reach verified buyers and tenants."
+                            >
+                                <a href="{{ route('properties.create') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-bold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                                    + Create Your First Property Listing
+                                </a>
+                            </x-empty-state>
                         </div>
                     @endforelse
                 </div>
@@ -183,8 +190,14 @@
                             </div>
                         </div>
                     @empty
-                        <div class="p-8 text-center text-slate-500 text-sm">
-                            No enquiries received on your listings yet.
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="chat"
+                                tone="slate"
+                                :compact="true"
+                                title="No Client Enquiries Yet"
+                                description="When buyers or tenants send an enquiry on your property listings, it will appear right here."
+                            />
                         </div>
                     @endforelse
                 </div>
@@ -267,11 +280,21 @@
                             </div>
                         @endif
                     @empty
-                        <div class="p-8 text-center text-slate-500 text-sm">
-                            <p>You haven't saved any properties yet.</p>
-                            <a href="{{ route('properties.index') }}" class="mt-3 inline-block text-xs font-bold bg-blue-800 text-white px-4 py-2 rounded-xl">
-                                Browse Properties
-                            </a>
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="heart"
+                                tone="blue"
+                                :compact="true"
+                                title="No Saved Properties Yet"
+                                description="Bookmark properties across Lagos, Abuja, and Port Harcourt to compare prices and revisit them later."
+                            >
+                                <a href="{{ route('properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-bold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                                    Browse Properties
+                                </a>
+                                <a href="{{ route('recommendations.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-semibold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl transition">
+                                    AI Picks
+                                </a>
+                            </x-empty-state>
                         </div>
                     @endforelse
                 </div>
@@ -307,8 +330,18 @@
                             <p class="text-[11px] text-slate-400">Sent {{ $enquiry->created_at?->diffForHumans() }}</p>
                         </div>
                     @empty
-                        <div class="p-8 text-center text-slate-500 text-sm">
-                            You haven't sent any property enquiries yet.
+                        <div class="p-4">
+                            <x-empty-state
+                                icon="chat"
+                                tone="slate"
+                                :compact="true"
+                                title="No Sent Enquiries Yet"
+                                description="Message any property owner or agent directly from a listing page to schedule an inspection."
+                            >
+                                <a href="{{ route('properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-semibold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-1.5 rounded-xl transition">
+                                    Explore Listings &rarr;
+                                </a>
+                            </x-empty-state>
                         </div>
                     @endforelse
                 </div>

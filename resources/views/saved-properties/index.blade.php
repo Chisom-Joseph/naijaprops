@@ -88,13 +88,13 @@
         @forelse($savedProperties as $saved)
             @php($property = $saved->property)
             @if($property)
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
+                <div data-animate="fade-up" class="np-card-hover bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
                     <div class="relative h-52 bg-slate-200 overflow-hidden">
                         <a href="{{ route('properties.show', $property) }}" class="block w-full h-full">
                             <img
                                 src="{{ $property->primary_image_url }}"
                                 alt="{{ $property->title }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
                             >
                         </a>
 
@@ -115,7 +115,7 @@
                             <button
                                 type="submit"
                                 title="Remove from Saved Properties"
-                                class="w-9 h-9 rounded-full bg-white/95 hover:bg-red-50 text-red-600 flex items-center justify-center shadow-sm transition"
+                                class="np-heart-btn w-9 h-9 rounded-full bg-white/95 hover:bg-red-50 text-red-600 flex items-center justify-center shadow-sm transition"
                             >
                                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -179,13 +179,13 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('properties.show', $property) }}" class="flex-1 text-center bg-blue-800 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-3 rounded-xl transition">
+                                <a href="{{ route('properties.show', $property) }}" class="np-btn-interactive flex-1 text-center bg-blue-800 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-3 rounded-xl transition">
                                     View &amp; Enquire
                                 </a>
                                 <form method="POST" action="{{ route('saved-properties.destroy', $property) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-semibold text-xs py-2.5 px-3 rounded-xl transition">
+                                    <button type="submit" class="np-btn-interactive bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-semibold text-xs py-2.5 px-3 rounded-xl transition">
                                         Unsave
                                     </button>
                                 </form>
@@ -195,20 +195,26 @@
                 </div>
             @endif
         @empty
-            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-800 flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">No Saved Properties Yet</h3>
-                <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-                    Bookmark properties across Lagos, Abuja, and Port Harcourt while browsing to easily compare prices and features here.
-                </p>
-                <a href="{{ route('properties.index') }}" class="mt-5 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
-                    Browse Properties
+            <x-empty-state
+                class="col-span-full"
+                icon="heart"
+                tone="blue"
+                badge="Watchlist Empty"
+                title="No Saved Properties Yet"
+                description="Click the heart icon on any Nigerian property listing across Lagos, Abuja, or Port Harcourt to bookmark it here for side-by-side price comparison and AI-assisted ranking."
+                :showCityShortcuts="true"
+            >
+                <a href="{{ route('properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                    <span>Browse Marketplace</span>
+                    <span>&rarr;</span>
                 </a>
-            </div>
+                <a href="{{ route('recommendations.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs px-5 py-2.5 rounded-xl transition">
+                    <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Explore AI Recommendations</span>
+                </a>
+            </x-empty-state>
         @endforelse
     </div>
 

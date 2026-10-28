@@ -238,8 +238,20 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-10 text-center text-sm text-slate-500">
-                                No properties found matching your filter criteria.
+                            <td colspan="5" class="p-6">
+                                <x-empty-state
+                                    icon="search"
+                                    tone="slate"
+                                    :compact="true"
+                                    title="No Matching Properties Found"
+                                    description="No property listings matched your current admin filter criteria."
+                                >
+                                    @if(request()->anyFilled(['search', 'property_type', 'transaction_type', 'status', 'flagged']))
+                                        <a href="{{ route('admin.properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 text-xs font-bold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                                            Reset All Filters
+                                        </a>
+                                    @endif
+                                </x-empty-state>
                             </td>
                         </tr>
                     @endforelse

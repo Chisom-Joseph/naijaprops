@@ -141,7 +141,7 @@
     <div data-np-content class="space-y-4 transition-opacity duration-200">
         @forelse($enquiries as $enquiry)
             @php($property = $enquiry->property)
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:border-blue-200 transition">
+            <div data-animate="fade-up" class="np-card-hover bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm hover:border-blue-200 transition">
                 <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                     <!-- Left: Sender/Recipient Details & Enquiry Message -->
                     <div class="flex-1 space-y-4">
@@ -322,30 +322,30 @@
                 </div>
             </div>
         @empty
-            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-800 flex items-center justify-center mx-auto mb-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">
-                    @if($tab === 'received')
-                        No Enquiries Received Yet
-                    @else
-                        No Enquiries Sent Yet
-                    @endif
-                </h3>
-                <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-                    @if($tab === 'received')
-                        When prospective buyers or tenants send an enquiry on your property listings, their messages will appear here.
-                    @else
-                        Have a question about a property's title documents, service charge, or inspection schedule? Open any listing to message the owner or agent directly.
-                    @endif
-                </p>
-                <a href="{{ route('properties.index') }}" class="mt-5 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
-                    Browse Properties
-                </a>
-            </div>
+            <x-empty-state
+                icon="chat"
+                tone="blue"
+                :badge="$tab === 'received' ? 'Inbox Clear' : 'No Sent Messages'"
+                :title="$tab === 'received' ? 'No Enquiries Received Yet' : 'No Enquiries Sent Yet'"
+                :description="$tab === 'received'
+                    ? 'When prospective buyers or tenants send an enquiry on your property listings, their messages and contact details will appear here.'
+                    : 'Have a question about a property\'s title documents, service charge, or physical inspection schedule? Open any listing to message the owner or agent directly.'"
+                :showCityShortcuts="$tab !== 'received'"
+            >
+                @if($tab === 'received' && $user->canListProperties())
+                    <a href="{{ route('properties.my') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        <span>View My Property Listings</span>
+                    </a>
+                    <a href="{{ route('properties.create') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs px-5 py-2.5 rounded-xl transition">
+                        <span>+ List New Property</span>
+                    </a>
+                @else
+                    <a href="{{ route('properties.index') }}" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        <span>Browse Verified Properties</span>
+                        <span>&rarr;</span>
+                    </a>
+                @endif
+            </x-empty-state>
         @endforelse
     </div>
 

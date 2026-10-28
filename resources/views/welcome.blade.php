@@ -6,7 +6,7 @@
 <!-- Hero Section with Search Bar + Filters -->
 <section class="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white py-14 sm:py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mb-8">
+        <div data-animate="fade-up" class="max-w-3xl mb-8">
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-800/80 text-blue-100 border border-blue-600/40 mb-4">
                 Nigeria's Centralised Property Platform
             </span>
@@ -16,10 +16,28 @@
             <p class="mt-4 text-base sm:text-lg text-blue-100 leading-relaxed">
                 Buy, rent, or list houses, duplexes, apartments, and land with transparent pricing in Naira (₦), direct owner/agent enquiries, and AI-assisted recommendations.
             </p>
+
+            <!-- Smooth-Scroll Quick Section Jump Links -->
+            <div class="mt-5 flex flex-wrap items-center gap-2.5 text-xs font-semibold">
+                <a href="#featured-properties" class="np-btn-interactive inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-blue-100 border border-white/20 px-3.5 py-1.5 rounded-full transition">
+                    <span>Explore Featured Listings</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </a>
+                @if(isset($recommendedProperties) && $recommendedProperties->isNotEmpty())
+                    <a href="#ai-recommendations" class="np-btn-interactive inline-flex items-center gap-1.5 bg-blue-800/80 hover:bg-blue-700 text-amber-200 border border-blue-600/50 px-3.5 py-1.5 rounded-full transition">
+                        <svg class="w-3.5 h-3.5 text-amber-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <span>AI-Assisted Picks</span>
+                    </a>
+                @endif
+            </div>
         </div>
 
         <!-- Hero Search & Filter Card -->
-        <div class="bg-white text-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl border border-blue-100">
+        <div data-animate="fade-up" data-animate-delay="80" class="bg-white text-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl border border-blue-100">
             <form method="GET" action="{{ route('properties.index') }}">
                 <!-- Transaction Type Tabs -->
                 <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
@@ -156,8 +174,8 @@
 
 <!-- AI-Assisted Recommendations Section -->
 @if(isset($recommendedProperties) && $recommendedProperties->isNotEmpty())
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
-    <div class="bg-gradient-to-br from-blue-50 via-white to-blue-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/50 rounded-3xl border border-blue-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+<section id="ai-recommendations" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
+    <div data-animate="fade-up" class="bg-gradient-to-br from-blue-50 via-white to-blue-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/50 rounded-3xl border border-blue-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-800 text-white mb-2.5">
@@ -172,7 +190,7 @@
                     <span class="font-semibold text-blue-800 dark:text-blue-400">{{ $recommendationProfile['source_label'] ?? 'Personalised Ranking' }}</span>
                 </p>
             </div>
-            <a href="{{ route('recommendations.index') }}" class="shrink-0 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition">
+            <a href="{{ route('recommendations.index') }}" class="np-btn-interactive shrink-0 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition">
                 <span>Customize AI Preferences</span>
                 <span>&rarr;</span>
             </a>
@@ -196,14 +214,15 @@
 @endif
 
 <!-- Featured Properties Preview -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+<section id="featured-properties" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div data-animate="fade-up" class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
             <h2 class="text-2xl font-bold text-slate-900">Featured Nigerian Properties</h2>
             <p class="text-sm text-slate-600 mt-1">Verified listings from property owners and agents across major Nigerian cities</p>
         </div>
-        <a href="{{ route('properties.index') }}" class="text-sm font-bold text-blue-800 hover:text-blue-700 inline-flex items-center gap-1">
-            View All Properties &rarr;
+        <a href="{{ route('properties.index') }}" class="text-sm font-bold text-blue-800 hover:text-blue-700 inline-flex items-center gap-1 group">
+            <span>View All Properties</span>
+            <span class="group-hover:translate-x-0.5 transition">&rarr;</span>
         </a>
     </div>
 
@@ -214,12 +233,12 @@
 
     <div data-np-content class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200">
         @forelse($featuredProperties ?? [] as $property)
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
+            <div data-animate="fade-up" class="np-card-hover bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col group">
                 <a href="{{ route('properties.show', $property) }}" class="relative h-52 bg-slate-200 block overflow-hidden">
                     <img
                         src="{{ $property->primary_image_url }}"
                         alt="{{ $property->title }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out"
                     >
                     <div class="absolute top-3 left-3 flex items-center gap-2">
                         <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm
@@ -272,7 +291,7 @@
                                     <button
                                         type="submit"
                                         title="{{ $isFeaturedSaved ? 'Remove from Saved Properties' : 'Save Property' }}"
-                                        class="p-1.5 rounded-lg border transition {{ $isFeaturedSaved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-red-600' }}"
+                                        class="np-heart-btn p-1.5 rounded-lg border transition {{ $isFeaturedSaved ? 'bg-red-50 border-red-200 text-red-600' : 'bg-slate-50 border-slate-200 text-slate-500 hover:text-red-600' }}"
                                     >
                                         <svg class="w-3.5 h-3.5 {{ $isFeaturedSaved ? 'fill-current' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -280,17 +299,35 @@
                                     </button>
                                 </form>
                             @endauth
-                            <a href="{{ route('properties.show', $property) }}" class="text-xs font-bold text-blue-800 hover:underline">
-                                Details &rarr;
+                            <a href="{{ route('properties.show', $property) }}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-800 hover:text-blue-700 group-hover:translate-x-0.5 transition">
+                                <span>Details</span>
+                                <span>&rarr;</span>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
         @empty
-            <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-10 text-center">
-                <p class="text-slate-600 font-medium">No properties seeded yet. Run <code class="bg-slate-100 px-2 py-0.5 rounded text-xs">php artisan migrate --seed</code> to populate Nigerian sample listings.</p>
-            </div>
+            <x-empty-state
+                class="col-span-full"
+                icon="property"
+                tone="blue"
+                badge="Marketplace Ready"
+                title="No Featured Properties Available Yet"
+                description="No property listings have been published yet. Seed Nigerian sample data for Lagos, Abuja, and Port Harcourt or list your first property."
+            >
+                @auth
+                    @can('create', \App\Models\Property::class)
+                        <a href="{{ route('properties.create') }}" class="np-btn-interactive bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                            + Publish First Property
+                        </a>
+                    @endcan
+                @else
+                    <a href="{{ route('register') }}" class="np-btn-interactive bg-blue-800 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm transition">
+                        Register as Property Owner / Agent
+                    </a>
+                @endauth
+            </x-empty-state>
         @endforelse
     </div>
 </section>
