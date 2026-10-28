@@ -46,6 +46,15 @@
         html.dark .bg-white {
             background-color: #1e293b !important;
         }
+        html.dark .bg-white\/95,
+        html.dark .bg-white\/90,
+        html.dark .bg-white\/80 {
+            background-color: rgba(15, 23, 42, 0.92) !important;
+            color: #f1f5f9 !important;
+        }
+        html.dark .text-blue-950 {
+            color: #e2e8f0 !important;
+        }
         html.dark .bg-slate-50 {
             background-color: #0f172a !important;
         }

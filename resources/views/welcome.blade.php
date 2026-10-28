@@ -153,7 +153,7 @@
 <!-- AI-Assisted Recommendations Section -->
 @if(isset($recommendedProperties) && $recommendedProperties->isNotEmpty())
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
-    <div class="bg-gradient-to-br from-blue-50 via-white to-blue-50/60 rounded-3xl border border-blue-200/80 p-6 sm:p-8 shadow-sm">
+    <div class="bg-gradient-to-br from-blue-50 via-white to-blue-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/50 rounded-3xl border border-blue-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-800 text-white mb-2.5">
@@ -162,10 +162,10 @@
                     </svg>
                     AI-Assisted Recommendations
                 </div>
-                <h2 class="text-2xl font-extrabold text-slate-900">Recommended For You</h2>
-                <p class="text-sm text-slate-600 mt-1">
+                <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Recommended For You</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                     Ranked by content similarity (Location, Property Type, Price Range in ₦ &amp; Bedrooms) &mdash;
-                    <span class="font-semibold text-blue-800">{{ $recommendationProfile['source_label'] ?? 'Personalised Ranking' }}</span>
+                    <span class="font-semibold text-blue-800 dark:text-blue-400">{{ $recommendationProfile['source_label'] ?? 'Personalised Ranking' }}</span>
                 </p>
             </div>
             <a href="{{ route('recommendations.index') }}" class="shrink-0 inline-flex items-center gap-1.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition">
