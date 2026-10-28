@@ -68,11 +68,17 @@
         html.dark .text-blue-950 {
             color: #e2e8f0 !important;
         }
-        html.dark .bg-slate-50 {
+        html.dark .bg-slate-50,
+        html.dark [class*="bg-slate-50/"] {
             background-color: #0f172a !important;
         }
-        html.dark .bg-slate-100 {
+        html.dark .bg-slate-100,
+        html.dark [class*="bg-slate-100/"] {
             background-color: #334155 !important;
+        }
+        html.dark .bg-slate-200,
+        html.dark [class*="bg-slate-200/"] {
+            background-color: #475569 !important;
         }
         html.dark .text-slate-900 {
             color: #f8fafc !important;
@@ -177,6 +183,61 @@
         html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
         html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
             border-color: #334155 !important;
+        }
+
+        /* Dark Mode Hover & Group-Hover State Overrides for Cards, Rows & Buttons */
+        html.dark .hover\:bg-slate-50:hover,
+        html.dark [class*="hover:bg-slate-50/"]:hover {
+            background-color: rgba(51, 65, 85, 0.55) !important;
+        }
+        html.dark .hover\:bg-slate-100:hover,
+        html.dark [class*="hover:bg-slate-100/"]:hover,
+        html.dark .hover\:bg-white:hover {
+            background-color: rgba(51, 65, 85, 0.85) !important;
+        }
+        html.dark .hover\:bg-slate-200:hover,
+        html.dark [class*="hover:bg-slate-200/"]:hover {
+            background-color: #475569 !important;
+        }
+        html.dark .hover\:bg-blue-50:hover,
+        html.dark [class*="hover:bg-blue-50/"]:hover,
+        html.dark .hover\:bg-blue-100:hover {
+            background-color: rgba(30, 64, 175, 0.55) !important;
+        }
+        html.dark .hover\:bg-emerald-50:hover,
+        html.dark [class*="hover:bg-emerald-50/"]:hover,
+        html.dark .hover\:bg-emerald-100:hover {
+            background-color: rgba(6, 95, 70, 0.55) !important;
+        }
+        html.dark .hover\:bg-amber-50:hover,
+        html.dark [class*="hover:bg-amber-50/"]:hover,
+        html.dark .hover\:bg-amber-100:hover {
+            background-color: rgba(146, 64, 14, 0.55) !important;
+        }
+        html.dark .hover\:bg-red-50:hover,
+        html.dark [class*="hover:bg-red-50/"]:hover,
+        html.dark .hover\:bg-red-100:hover {
+            background-color: rgba(153, 27, 27, 0.55) !important;
+        }
+        html.dark .hover\:text-blue-900:hover,
+        html.dark .hover\:text-blue-800:hover,
+        html.dark .hover\:text-blue-700:hover,
+        html.dark .group:hover .group-hover\:text-blue-800,
+        html.dark .group:hover .group-hover\:text-blue-700 {
+            color: #93c5fd !important;
+        }
+        html.dark .hover\:text-slate-900:hover,
+        html.dark .hover\:text-slate-800:hover,
+        html.dark .hover\:text-slate-700:hover {
+            color: #f8fafc !important;
+        }
+        html.dark .hover\:border-slate-300:hover,
+        html.dark .hover\:border-slate-200:hover {
+            border-color: #475569 !important;
+        }
+        html.dark .hover\:border-blue-200:hover,
+        html.dark .hover\:border-blue-300:hover {
+            border-color: rgba(96, 165, 250, 0.55) !important;
         }
         html.dark input:not([type="checkbox"]):not([type="radio"]),
         html.dark select,
