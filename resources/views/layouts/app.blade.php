@@ -848,43 +848,88 @@
         </div>
     </header>
 
+    <!-- Floating Auto-Dismissing Success Toast Notification (Never Shifts Page Layout) -->
+    @if(session('success'))
+        <div
+            x-data="{
+                showAlert: true,
+                progress: 100,
+                interval: null,
+                paused: false,
+                init() {
+                    const duration = 4000;
+                    const step = 50;
+                    this.interval = setInterval(() => {
+                        if (!this.paused) {
+                            this.progress -= (step / duration) * 100;
+                            if (this.progress <= 0) {
+                                this.progress = 0;
+                                this.showAlert = false;
+                                clearInterval(this.interval);
+                            }
+                        }
+                    }, step);
+                }
+            }"
+            @mouseenter="paused = true"
+            @mouseleave="paused = false"
+            x-show="showAlert"
+            x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-6 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0 sm:translate-x-0 scale-100"
+            x-transition:leave-end="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-6 scale-95"
+            role="status"
+            aria-live="polite"
+            class="fixed top-20 right-4 sm:right-6 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-full pointer-events-auto"
+        >
+            <div class="relative overflow-hidden bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-slate-950/60 p-4 flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+
+                <div class="min-w-0 flex-1 pt-0.5">
+                    <p class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                        Success
+                    </p>
+                    <p class="text-xs font-medium text-slate-700 dark:text-slate-200 mt-0.5 leading-relaxed">
+                        {{ session('success') }}
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    @click="showAlert = false; clearInterval(interval)"
+                    class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 rounded-lg transition shrink-0"
+                    aria-label="Dismiss notification"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <!-- Auto-Dismiss Progress Bar -->
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-100/70 dark:bg-emerald-950/60">
+                    <div
+                        class="h-full bg-emerald-500 dark:bg-emerald-400 transition-all duration-75 ease-linear"
+                        :style="'width: ' + progress + '%'"
+                    ></div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if($showDashboardSidebar)
         <!-- Dashboard Layout with Responsive & Collapsible Sidebar -->
         <div class="flex-1 flex min-h-[calc(100vh-4rem)]">
             <x-dashboard-sidebar :mode="$sidebarMode" />
 
             <div class="flex-1 min-w-0 flex flex-col">
-                <!-- Flash Notifications inside Dashboard Main Content -->
-                @if(session('success'))
-                    <div
-                        x-data="{ showAlert: true }"
-                        x-show="showAlert"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 -translate-y-2"
-                        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full"
-                    >
-                        <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 shadow-xs">
-                            <div class="flex items-center space-x-2.5 text-sm font-medium">
-                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span>{{ session('success') }}</span>
-                            </div>
-                            <button
-                                type="button"
-                                @click="showAlert = false"
-                                class="text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 p-1 rounded-lg transition shrink-0"
-                                aria-label="Dismiss notification"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                @endif
-
+                <!-- Validation Error Banner inside Dashboard Main Content -->
                 @if($errors->any())
                     <div
                         x-data="{ showErrorAlert: true }"
@@ -937,36 +982,6 @@
         </div>
     @else
         <!-- Standard Public / Auth Page Layout -->
-        @if(session('success'))
-            <div
-                x-data="{ showAlert: true }"
-                x-show="showAlert"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 translate-y-0"
-                x-transition:leave-end="opacity-0 -translate-y-2"
-                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full"
-            >
-                <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 shadow-xs">
-                    <div class="flex items-center space-x-2.5 text-sm font-medium">
-                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                    <button
-                        type="button"
-                        @click="showAlert = false"
-                        class="text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 p-1 rounded-lg transition shrink-0"
-                        aria-label="Dismiss notification"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        @endif
-
         @if($errors->any())
             <div
                 x-data="{ showErrorAlert: true }"
