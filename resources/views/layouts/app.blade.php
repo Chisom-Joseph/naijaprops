@@ -5,75 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name', 'NaijaProps') . ' – Nigerian Property Listing & Trading System')</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
+    <!-- Immediate Theme Restoration (Prevents Flash of Unstyled Theme) -->
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('naijaprops_theme') || localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        };
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        [x-cloak] { display: none !important; }
         body { font-family: 'Inter', sans-serif; }
+
+        /* Global Dark Theme Adaptations for Cards, Tables, Surfaces & Forms */
+        html.dark body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        html.dark .bg-white {
+            background-color: #1e293b !important;
+        }
+        html.dark .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+        html.dark .bg-slate-100 {
+            background-color: #334155 !important;
+        }
+        html.dark .text-slate-900 {
+            color: #f8fafc !important;
+        }
+        html.dark .text-slate-800 {
+            color: #f1f5f9 !important;
+        }
+        html.dark .text-slate-700 {
+            color: #cbd5e1 !important;
+        }
+        html.dark .text-slate-600 {
+            color: #94a3b8 !important;
+        }
+        html.dark .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+        html.dark .text-blue-900 {
+            color: #93c5fd !important;
+        }
+        html.dark .text-blue-800 {
+            color: #60a5fa !important;
+        }
+        html.dark .border-slate-200,
+        html.dark .border-slate-100,
+        html.dark .border-slate-300 {
+            border-color: #334155 !important;
+        }
+        html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+        html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+            border-color: #334155 !important;
+        }
+        html.dark input:not([type="checkbox"]):not([type="radio"]),
+        html.dark select,
+        html.dark textarea {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+            border-color: #475569 !important;
+        }
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: #64748b !important;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
+@php
+    $showDashboardSidebar = auth()->check() && (
+        View::hasSection('sidebar') ||
+        request()->routeIs(
+            'dashboard',
+            'admin.*',
+            'properties.my',
+            'properties.create',
+            'properties.edit',
+            'saved-properties.*',
+            'enquiries.*'
+        )
+    );
+    $sidebarMode = trim($__env->yieldContent('sidebar')) ?: (auth()->check() && auth()->user()->isAdmin() ? 'admin' : 'user');
+@endphp
+<body
+    x-data="{
+        darkMode: document.documentElement.classList.contains('dark'),
+        mobileOpen: false,
+        mobileSidebarOpen: false,
+        sidebarCollapsed: false,
+        init() {
+            try {
+                const savedTheme = localStorage.getItem('naijaprops_theme') || localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    this.darkMode = true;
+                    document.documentElement.classList.add('dark');
+                } else if (savedTheme === 'light') {
+                    this.darkMode = false;
+                    document.documentElement.classList.remove('dark');
+                }
+                this.sidebarCollapsed = localStorage.getItem('naijaprops_sidebar_collapsed') === 'true';
+            } catch (e) {}
+        },
+        toggleTheme() {
+            this.darkMode = !this.darkMode;
+            document.documentElement.classList.toggle('dark', this.darkMode);
+            try {
+                const value = this.darkMode ? 'dark' : 'light';
+                localStorage.setItem('naijaprops_theme', value);
+                localStorage.setItem('theme', value);
+            } catch (e) {}
+        },
+        toggleSidebarCollapse() {
+            this.sidebarCollapsed = !this.sidebarCollapsed;
+            try {
+                localStorage.setItem('naijaprops_sidebar_collapsed', this.sidebarCollapsed ? 'true' : 'false');
+            } catch (e) {}
+        }
+    }"
+    @keydown.escape.window="mobileSidebarOpen = false; mobileOpen = false"
+    class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200"
+>
     <!-- Top Navigation Bar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm" x-data="{ mobileOpen: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-xs transition-colors duration-200">
+        <div class="{{ $showDashboardSidebar ? 'max-w-full px-4 sm:px-6 lg:px-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' }}">
             <div class="flex justify-between items-center h-16">
-                <!-- Brand Logo -->
-                <div class="flex items-center space-x-8">
+                <!-- Left: Sidebar Toggle (on Dashboard/Admin pages) + Brand Logo + Nav Links -->
+                <div class="flex items-center space-x-3 sm:space-x-6">
+                    @if($showDashboardSidebar)
+                        <!-- Mobile Sidebar Drawer Trigger -->
+                        <button
+                            type="button"
+                            @click="mobileSidebarOpen = !mobileSidebarOpen"
+                            class="lg:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+                            aria-label="Toggle dashboard sidebar"
+                            title="Open Dashboard Menu"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
+                            </svg>
+                        </button>
+
+                        <!-- Desktop Sidebar Collapse/Expand Trigger -->
+                        <button
+                            type="button"
+                            @click="toggleSidebarCollapse()"
+                            class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-800 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+                            :title="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                            aria-label="Toggle sidebar width"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
+                            </svg>
+                        </button>
+                    @endif
+
                     <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group">
-                        <div class="w-9 h-9 rounded-lg bg-blue-800 flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:bg-blue-700 transition">
+                        <div class="w-9 h-9 rounded-lg bg-blue-800 flex items-center justify-center text-white font-bold text-lg shadow-xs group-hover:bg-blue-700 transition">
                             NP
                         </div>
                         <div>
-                            <span class="text-xl font-extrabold tracking-tight text-blue-900">Naija<span class="text-blue-600">Props</span></span>
-                            <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded ml-1 border border-blue-200">NG</span>
+                            <span class="text-xl font-extrabold tracking-tight text-blue-900 dark:text-blue-400">Naija<span class="text-blue-600 dark:text-blue-300">Props</span></span>
+                            <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded ml-1 border border-blue-200 dark:border-blue-700">NG</span>
                         </div>
                     </a>
 
                     <!-- Desktop Nav Links -->
-                    <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-600">
-                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                    <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                             Home
                         </a>
-                        <a href="{{ route('properties.index') }}" class="{{ request()->routeIs('properties.index', 'properties.show') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                        <a href="{{ route('properties.index') }}" class="{{ request()->routeIs('properties.index', 'properties.show') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                             Browse Properties
                         </a>
-                        <a href="{{ route('recommendations.index') }}" class="{{ request()->routeIs('recommendations.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }} inline-flex items-center gap-1">
+                        <a href="{{ route('recommendations.index') }}" class="{{ request()->routeIs('recommendations.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }} inline-flex items-center gap-1">
                             <span>AI Recommendations</span>
                         </a>
                         @auth
                             @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Admin Dashboard
                                 </a>
-                                <a href="{{ route('admin.properties.index') }}" class="{{ request()->routeIs('admin.properties.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('admin.properties.index') }}" class="{{ request()->routeIs('admin.properties.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Manage Properties
                                 </a>
-                                <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Manage Users
                                 </a>
-                                <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Reports
                                 </a>
-                                <a href="{{ route('enquiries.index') }}" class="{{ request()->routeIs('enquiries.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
-                                    Enquiries
-                                </a>
                             @else
-                                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     My Dashboard
                                 </a>
-                                <a href="{{ route('saved-properties.index') }}" class="{{ request()->routeIs('saved-properties.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('saved-properties.index') }}" class="{{ request()->routeIs('saved-properties.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Saved Properties
                                 </a>
-                                <a href="{{ route('enquiries.index') }}" class="{{ request()->routeIs('enquiries.*') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                <a href="{{ route('enquiries.index') }}" class="{{ request()->routeIs('enquiries.*') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                     Enquiries
                                 </a>
                                 @can('create', \App\Models\Property::class)
-                                    <a href="{{ route('properties.my') }}" class="{{ request()->routeIs('properties.my') ? 'text-blue-800 font-semibold' : 'hover:text-blue-800 transition' }}">
+                                    <a href="{{ route('properties.my') }}" class="{{ request()->routeIs('properties.my') ? 'text-blue-800 dark:text-blue-400 font-semibold' : 'hover:text-blue-800 dark:hover:text-blue-400 transition' }}">
                                         My Listings
                                     </a>
-                                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-semibold text-xs px-3 py-1.5 rounded-lg transition">
+                                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/70 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700 font-semibold text-xs px-3 py-1.5 rounded-lg transition">
                                         + List Property
                                     </a>
                                 @endcan
@@ -82,30 +240,49 @@
                     </nav>
                 </div>
 
-                <!-- Right Side Auth Actions -->
-                <div class="hidden md:flex items-center space-x-4">
+                <!-- Right Side: Theme Toggle + Auth Actions -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <!-- Light / Dark Theme Toggle Button -->
+                    <button
+                        type="button"
+                        @click="toggleTheme()"
+                        :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+                        aria-label="Toggle Light/Dark Theme"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                    >
+                        <!-- Sun Icon (Dark Mode Active) -->
+                        <svg x-show="darkMode" x-cloak class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <!-- Moon Icon (Light Mode Active) -->
+                        <svg x-show="!darkMode" class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <span x-text="darkMode ? 'Light' : 'Dark'"></span>
+                    </button>
+
                     @guest
-                        <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-800 px-3 py-2 rounded-lg transition">
+                        <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-800 dark:hover:text-blue-400 px-3 py-2 rounded-lg transition">
                             Sign In
                         </a>
-                        <a href="{{ route('register') }}" class="text-sm font-semibold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg shadow-sm transition">
+                        <a href="{{ route('register') }}" class="text-sm font-semibold bg-blue-800 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg shadow-xs transition">
                             Create Account
                         </a>
                     @else
                         <div class="flex items-center space-x-3">
                             <div class="text-right">
-                                <p class="text-sm font-semibold text-slate-800 leading-none">{{ auth()->user()->full_name }}</p>
+                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-none">{{ auth()->user()->full_name }}</p>
                                 <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mt-1
-                                    @if(auth()->user()->isAdmin()) bg-purple-100 text-purple-800
-                                    @elseif(auth()->user()->canListProperties()) bg-blue-100 text-blue-800
-                                    @else bg-emerald-100 text-emerald-800 @endif">
+                                    @if(auth()->user()->isAdmin()) bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300
+                                    @elseif(auth()->user()->canListProperties()) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
+                                    @else bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 @endif">
                                     {{ auth()->user()->role_label }}
                                 </span>
                             </div>
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="text-sm font-medium text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-200 bg-slate-50 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+                                <button type="submit" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-200 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 px-3 py-2 rounded-lg transition">
                                     Logout
                                 </button>
                             </form>
@@ -113,12 +290,27 @@
                     @endguest
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <div class="flex md:hidden">
-                    <button @click="mobileOpen = !mobileOpen" type="button" class="text-slate-600 hover:text-slate-900 p-2 rounded-lg focus:outline-none">
+                <!-- Mobile Right Controls: Theme Toggle + Mobile Menu Button -->
+                <div class="flex items-center space-x-2 md:hidden">
+                    <button
+                        type="button"
+                        @click="toggleTheme()"
+                        :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+                        aria-label="Toggle theme"
+                        class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 transition"
+                    >
+                        <svg x-show="darkMode" x-cloak class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <svg x-show="!darkMode" class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </button>
+
+                    <button @click="mobileOpen = !mobileOpen" type="button" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 p-2 rounded-lg focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path x-show="!mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                            <path x-show="mobileOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            <path x-show="mobileOpen" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
@@ -126,81 +318,142 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div x-show="mobileOpen" class="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-4 space-y-2">
-            <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Home</a>
-            <a href="{{ route('properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Browse Properties</a>
-            <a href="{{ route('recommendations.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">AI Recommendations</a>
+        <div x-show="mobileOpen" x-cloak class="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-3 pb-4 space-y-2">
+            <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Home</a>
+            <a href="{{ route('properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Browse Properties</a>
+            <a href="{{ route('recommendations.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">AI Recommendations</a>
             @auth
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Admin Dashboard</a>
-                    <a href="{{ route('admin.properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Manage Properties</a>
-                    <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Manage Users</a>
-                    <a href="{{ route('admin.reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Manage Reports</a>
-                    <a href="{{ route('enquiries.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Enquiries</a>
+                    <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Admin Dashboard</a>
+                    <a href="{{ route('admin.properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Manage Properties</a>
+                    <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Manage Users</a>
+                    <a href="{{ route('admin.reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Manage Reports</a>
+                    <a href="{{ route('enquiries.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Enquiries</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">My Dashboard</a>
-                    <a href="{{ route('saved-properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Saved Properties</a>
-                    <a href="{{ route('enquiries.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">Enquiries</a>
+                    <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">My Dashboard</a>
+                    <a href="{{ route('saved-properties.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Saved Properties</a>
+                    <a href="{{ route('enquiries.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Enquiries</a>
                     @can('create', \App\Models\Property::class)
-                        <a href="{{ route('properties.my') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">My Listings</a>
-                        <a href="{{ route('properties.create') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-blue-800 bg-blue-50">+ List New Property</a>
+                        <a href="{{ route('properties.my') }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">My Listings</a>
+                        <a href="{{ route('properties.create') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/40">+ List New Property</a>
                     @endcan
                 @endif
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between px-3">
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between px-3">
                     <div>
-                        <p class="text-sm font-semibold text-slate-800">{{ auth()->user()->full_name }}</p>
-                        <p class="text-xs text-slate-500">{{ auth()->user()->role_label }}</p>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ auth()->user()->full_name }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role_label }}</p>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 px-3 py-1.5 rounded-lg">Logout</button>
+                        <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/40 dark:text-red-300 px-3 py-1.5 rounded-lg">Logout</button>
                     </form>
                 </div>
             @else
-                <div class="pt-2 border-t border-slate-100 flex flex-col space-y-2">
-                    <a href="{{ route('login') }}" class="w-full text-center py-2 rounded-lg border border-slate-300 text-sm font-semibold text-slate-700">Sign In</a>
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col space-y-2">
+                    <a href="{{ route('login') }}" class="w-full text-center py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200">Sign In</a>
                     <a href="{{ route('register') }}" class="w-full text-center py-2 rounded-lg bg-blue-800 text-white text-sm font-semibold">Create Account</a>
                 </div>
             @endguest
         </div>
     </header>
 
-    <!-- Flash Notifications -->
-    @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
-            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2 text-sm font-medium">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>{{ session('success') }}</span>
+    @if($showDashboardSidebar)
+        <!-- Dashboard Layout with Responsive & Collapsible Sidebar -->
+        <div class="flex-1 flex min-h-[calc(100vh-4rem)]">
+            <x-dashboard-sidebar :mode="$sidebarMode" />
+
+            <div class="flex-1 min-w-0 flex flex-col">
+                <!-- Mobile Quick Sidebar Bar for Dashboard Pages -->
+                <div class="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between">
+                    <button
+                        type="button"
+                        @click="mobileSidebarOpen = true"
+                        class="inline-flex items-center gap-2 text-xs font-bold text-blue-800 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-xl"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
+                        </svg>
+                        <span>{{ $sidebarMode === 'admin' ? 'Admin Menu' : 'Dashboard Menu' }}</span>
+                    </button>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                        {{ auth()->user()->role_label }}
+                    </span>
                 </div>
+
+                <!-- Flash Notifications inside Dashboard Main Content -->
+                @if(session('success'))
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+                        <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl flex items-center justify-between shadow-xs">
+                            <div class="flex items-center space-x-2 text-sm font-medium">
+                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>{{ session('success') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+                        <div class="bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl shadow-xs">
+                            <div class="flex items-center space-x-2 text-sm font-semibold mb-1">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Please check the following errors:</span>
+                            </div>
+                            <ul class="list-disc list-inside text-xs space-y-0.5 text-red-700 dark:text-red-300">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
+                <main class="flex-1">
+                    @yield('content')
+                </main>
             </div>
         </div>
-    @endif
-
-    @if($errors->any())
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
-            <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl shadow-sm">
-                <div class="flex items-center space-x-2 text-sm font-semibold mb-1">
-                    <svg class="w-5 h-5 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>Please check the following errors:</span>
+    @else
+        <!-- Standard Public / Auth Page Layout -->
+        @if(session('success'))
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+                <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl flex items-center justify-between shadow-xs">
+                    <div class="flex items-center space-x-2 text-sm font-medium">
+                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ session('success') }}</span>
+                    </div>
                 </div>
-                <ul class="list-disc list-inside text-xs space-y-0.5 text-red-700">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
             </div>
-        </div>
-    @endif
+        @endif
 
-    <!-- Main Page Content -->
-    <main class="flex-1">
-        @yield('content')
-    </main>
+        @if($errors->any())
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+                <div class="bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl shadow-xs">
+                    <div class="flex items-center space-x-2 text-sm font-semibold mb-1">
+                        <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>Please check the following errors:</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs space-y-0.5 text-red-700 dark:text-red-300">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
+
+        <main class="flex-1">
+            @yield('content')
+        </main>
+    @endif
 
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-16">
