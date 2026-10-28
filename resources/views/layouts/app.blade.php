@@ -371,6 +371,7 @@
         mobileOpen: false,
         mobileSidebarOpen: false,
         sidebarCollapsed: false,
+        logoutModalOpen: false,
         showBackToTop: false,
         init() {
             try {
@@ -406,7 +407,7 @@
         }
     }"
     @scroll.window.passive="showBackToTop = window.scrollY > 320"
-    @keydown.escape.window="mobileSidebarOpen = false; mobileOpen = false"
+    @keydown.escape.window="mobileSidebarOpen = false; mobileOpen = false; logoutModalOpen = false"
     class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-200"
 >
     <!-- Top Loading Progress Bar -->
@@ -455,6 +456,81 @@
             </div>
         </div>
     </div>
+
+    @auth
+        <!-- Logout Confirmation Modal -->
+        <div
+            x-show="logoutModalOpen"
+            x-cloak
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="np-logout-modal-title"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
+            <!-- Modal Backdrop -->
+            <div
+                x-show="logoutModalOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                @click="logoutModalOpen = false"
+                class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs"
+                aria-hidden="true"
+            ></div>
+
+            <!-- Modal Card -->
+            <div
+                x-show="logoutModalOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-5 z-10"
+            >
+                <!-- Warning / Sign-Out Icon -->
+                <div class="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-100 dark:border-red-900/60 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </div>
+
+                <div class="space-y-1.5">
+                    <h3 id="np-logout-modal-title" class="text-base font-extrabold text-slate-900 dark:text-white">
+                        Sign Out of NaijaProps?
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Are you sure you want to end your session as <strong class="text-slate-700 dark:text-slate-200">{{ auth()->user()->full_name }}</strong>? You will need to sign in again to manage listings or view saved properties.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button
+                        type="button"
+                        @click="logoutModalOpen = false"
+                        class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition"
+                    >
+                        Cancel
+                    </button>
+
+                    <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
+                        @csrf
+                        <button
+                            type="submit"
+                            data-loading-text="Signing out..."
+                            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 shadow-xs transition"
+                        >
+                            Yes, Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endauth
 
     <!-- Top Navigation Bar -->
     <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 shadow-xs transition-colors duration-200">
@@ -671,20 +747,21 @@
                                     </a>
                                 </div>
 
-                                <!-- Sign Out Action -->
+                                <!-- Sign Out Action (Triggers Logout Confirmation Modal) -->
                                 <div class="pt-1.5 border-t border-slate-100 dark:border-slate-800">
-                                    <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
-                                        @csrf
-                                        <button type="submit" data-loading-text="Signing out..." class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                                            <span class="flex items-center gap-2.5">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                                </svg>
-                                                <span>Sign Out</span>
-                                            </span>
-                                            <span class="text-[10px] font-medium text-red-400">Logout</span>
-                                        </button>
-                                    </form>
+                                    <button
+                                        type="button"
+                                        @click="userCardOpen = false; logoutModalOpen = true"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                                    >
+                                        <span class="flex items-center gap-2.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            <span>Sign Out</span>
+                                        </span>
+                                        <span class="text-[10px] font-medium text-red-400">Logout</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -754,10 +831,13 @@
                         <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ auth()->user()->full_name }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->role_label }}</p>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
-                        @csrf
-                        <button type="submit" data-loading-text="Signing out..." class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/40 dark:text-red-300 px-3 py-1.5 rounded-lg">Logout</button>
-                    </form>
+                    <button
+                        type="button"
+                        @click="mobileOpen = false; logoutModalOpen = true"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-900/40 dark:text-red-300 px-3 py-1.5 rounded-lg"
+                    >
+                        Logout
+                    </button>
                 </div>
             @else
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col space-y-2">

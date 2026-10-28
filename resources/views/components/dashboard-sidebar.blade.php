@@ -441,21 +441,19 @@
                 ></span>
             </button>
 
-            <!-- Logout Form -->
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button
-                    type="submit"
-                    title="Sign Out"
-                    :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : 'px-3'"
-                    class="w-full flex items-center gap-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
-                >
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    <span x-show="!sidebarCollapsed">Sign Out</span>
-                </button>
-            </form>
+            <!-- Logout Trigger (Opens Logout Confirmation Modal) -->
+            <button
+                type="button"
+                @click="mobileSidebarOpen = false; logoutModalOpen = true"
+                title="Sign Out"
+                :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : 'px-3'"
+                class="w-full flex items-center gap-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+            >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span x-show="!sidebarCollapsed">Sign Out</span>
+            </button>
         </div>
     </aside>
 @endif
