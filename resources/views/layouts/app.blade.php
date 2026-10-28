@@ -518,15 +518,15 @@
                     </nav>
                 </div>
 
-                <!-- Right Side: Theme Toggle + Auth Actions -->
-                <div class="hidden md:flex items-center space-x-3">
+                <!-- Right Side: Theme Toggle + User Profile Card / Auth Actions -->
+                <div class="hidden md:flex items-center space-x-2.5">
                     <!-- Light / Dark Theme Toggle Button -->
                     <button
                         type="button"
                         @click="toggleTheme()"
                         :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
                         aria-label="Toggle Light/Dark Theme"
-                        class="np-btn-interactive inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                        class="np-btn-interactive inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                     >
                         <!-- Sun Icon (Dark Mode Active) -->
                         <svg x-show="darkMode" x-cloak class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -536,7 +536,6 @@
                         <svg x-show="!darkMode" class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
-                        <span x-text="darkMode ? 'Light' : 'Dark'"></span>
                     </button>
 
                     @guest
@@ -547,23 +546,147 @@
                             Create Account
                         </a>
                     @else
-                        <div class="flex items-center space-x-3">
-                            <div class="text-right">
-                                <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-none">{{ auth()->user()->full_name }}</p>
-                                <span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full mt-1
-                                    @if(auth()->user()->isAdmin()) bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300
-                                    @elseif(auth()->user()->canListProperties()) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
-                                    @else bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 @endif">
-                                    {{ auth()->user()->role_label }}
-                                </span>
-                            </div>
+                        @php
+                            $authUser = auth()->user();
+                            $cleanDisplayName = trim((string) preg_replace('/\s*\(admin\)\s*$/i', '', $authUser->full_name)) ?: $authUser->full_name;
+                            $avatarInitials = collect(explode(' ', $cleanDisplayName))
+                                ->filter()
+                                ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
+                                ->take(2)
+                                ->implode('') ?: 'U';
+                        @endphp
+                        <!-- Header User Profile Card + Dropdown -->
+                        <div x-data="{ userCardOpen: false }" @click.outside="userCardOpen = false" @keydown.escape.window="userCardOpen = false" class="relative">
+                            <button
+                                type="button"
+                                @click="userCardOpen = !userCardOpen"
+                                :aria-expanded="userCardOpen"
+                                class="group flex items-center gap-2.5 pl-1.5 pr-3 py-1 rounded-2xl bg-slate-50/90 dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 transition shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                            >
+                                <!-- Circular Avatar with Online Dot -->
+                                <div class="relative shrink-0">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold text-white shadow-2xs
+                                        @if($authUser->isAdmin()) bg-gradient-to-br from-purple-600 to-blue-700
+                                        @elseif($authUser->canListProperties()) bg-gradient-to-br from-blue-700 to-sky-600
+                                        @else bg-gradient-to-br from-emerald-600 to-teal-700 @endif">
+                                        {{ $avatarInitials }}
+                                    </div>
+                                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"></span>
+                                </div>
 
-                            <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
-                                @csrf
-                                <button type="submit" data-loading-text="Signing out..." class="np-btn-interactive inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-200 bg-slate-50 dark:bg-slate-800 hover:bg-red-50 px-3 py-2 rounded-lg transition">
-                                    <span>Logout</span>
-                                </button>
-                            </form>
+                                <!-- Left-aligned Name & Role Subtitle -->
+                                <div class="text-left leading-tight max-w-[160px]">
+                                    <p class="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                                        {{ $cleanDisplayName }}
+                                    </p>
+                                    <p class="text-[11px] font-semibold truncate
+                                        @if($authUser->isAdmin()) text-purple-700 dark:text-purple-300
+                                        @elseif($authUser->canListProperties()) text-blue-700 dark:text-blue-300
+                                        @else text-emerald-700 dark:text-emerald-300 @endif">
+                                        {{ $authUser->role_label }}
+                                    </p>
+                                </div>
+
+                                <!-- Chevron Indicator -->
+                                <svg
+                                    class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 shrink-0"
+                                    :class="userCardOpen ? 'rotate-180 text-blue-700 dark:text-blue-400' : ''"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <!-- Expanded User Account Card Popover -->
+                            <div
+                                x-show="userCardOpen"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 translate-y-1.5 scale-95"
+                                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                x-transition:leave-end="opacity-0 translate-y-1.5 scale-95"
+                                class="absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-2 z-50"
+                            >
+                                <!-- User Profile Summary Card Inside Popover -->
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/70 flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-sm font-extrabold text-white shadow-xs
+                                        @if($authUser->isAdmin()) bg-gradient-to-br from-purple-600 to-blue-700
+                                        @elseif($authUser->canListProperties()) bg-gradient-to-br from-blue-700 to-sky-600
+                                        @else bg-gradient-to-br from-emerald-600 to-teal-700 @endif">
+                                        {{ $avatarInitials }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                                            {{ $cleanDisplayName }}
+                                        </p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                            {{ $authUser->email }}
+                                        </p>
+                                        <div class="mt-1.5 flex items-center gap-1.5">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full
+                                                @if($authUser->isAdmin()) bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300
+                                                @elseif($authUser->canListProperties()) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
+                                                @else bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 @endif">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                {{ $authUser->role_label }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Account Navigation Links -->
+                                <div class="py-1.5 space-y-0.5">
+                                    @if($authUser->isAdmin())
+                                        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                            </svg>
+                                            <span>Admin Control Center</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                            </svg>
+                                            <span>My Dashboard</span>
+                                        </a>
+                                    @endif
+
+                                    <a href="{{ route('saved-properties.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                        </svg>
+                                        <span>Saved Properties</span>
+                                    </a>
+
+                                    <a href="{{ route('enquiries.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                        </svg>
+                                        <span>Property Enquiries</span>
+                                    </a>
+                                </div>
+
+                                <!-- Sign Out Action -->
+                                <div class="pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                                    <form method="POST" action="{{ route('logout') }}" data-loading-overlay="true" data-loading-title="Signing Out..." data-loading-subtitle="Closing your NaijaProps session securely...">
+                                        @csrf
+                                        <button type="submit" data-loading-text="Signing out..." class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition">
+                                            <span class="flex items-center gap-2.5">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                                </svg>
+                                                <span>Sign Out</span>
+                                            </span>
+                                            <span class="text-[10px] font-medium text-red-400">Logout</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     @endguest
                 </div>
